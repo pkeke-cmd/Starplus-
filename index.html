@@ -1,151 +1,153 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starplus | Investment System</title>
+    <title>Starplus | VIP Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
-        .paj { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        :root {
+            --primary: #c0ff00; /* Vèt flash ou a */
+            --bg: #000000;
+            --card: #15181c;
+            --text: #ffffff;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        .paj { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .paj.aktive { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- UI COMPONENTS --- */
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
-        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 2px solid var(--primary); padding: 25px; border-radius: 25px; text-align: center; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; }
-        
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { padding: 12px; border: 1px solid #2d2d2d; text-align: center; }
-        th { background: var(--primary); color: #000; }
+        /* --- STYLE LOGIN (FOTO 15:10) --- */
+        #paj-login { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .input-group { width: 85%; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #444; background: #000; color: #fff; box-sizing: border-box; }
 
-        /* --- NAV --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 10px; cursor: pointer; }
+        /* --- STYLE MAISON (FOTO 15:05) --- */
+        .balance-card { background: var(--primary); color: #000; padding: 30px; border-radius: 30px; margin-bottom: 20px; position: relative; }
+        .balance-card h1 { font-size: 45px; margin: 5px 0; font-weight: 800; }
+        
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .card-auto { background: var(--card); border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid #2d2d2d; }
+        .card-auto i { color: var(--primary); font-size: 24px; margin-bottom: 10px; }
+
+        .btn-main { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; font-size: 16px; }
+
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #000; border-radius: 15px; overflow: hidden; }
+        th, td { padding: 12px; border: 1px solid #222; text-align: center; font-size: 13px; }
+        th { background: #1a1a1a; color: var(--primary); }
+
+        /* --- NAV BAR --- */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; }
+        .nav-item { color: #555; text-align: center; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="paj-auth" class="paj aktive">
-        <div style="text-align:center; margin-top:50px;">
-            <h1 style="color:var(--primary); font-size:40px;">STARPLUS</h1>
-            <div class="card" style="width:85%; margin:auto;">
-                <h3 id="auth-title">Créer un compte</h3>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="pass" placeholder="Mot de passe">
-                <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
-                <button class="btn-main" onclick="connexion()">S'inscrire / Connexion</button>
-            </div>
+    <div id="paj-login" class="paj aktive">
+        <h1 style="color: var(--primary); font-size: 45px; margin-bottom: 10px;">STARPLUS</h1>
+        <div class="input-group">
+            <h3>Connexion</h3>
+            <input type="email" id="u-email" placeholder="Email">
+            <input type="password" id="u-pass" placeholder="Mot de passe">
+            <button class="btn-main" onclick="logMeIn()">Se Connecter</button>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small>Solde Total (USDT)</small>
-            <h1 style="font-size: 35px; color: var(--primary); margin: 10px 0;">500.00</h1>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff">Dépôt</button>
-                <button class="btn-main" onclick="montrePaj('paj-retrait')" style="background:var(--primary)">Retrait</button>
-            </div>
+            <small>Solde Actuel (USDT)</small>
+            <h1>500.00</h1>
+            <p id="user-id" style="font-size: 12px; font-weight: bold;"></p>
         </div>
 
-        <h3>Évaluation des Revenus VIP</h3>
-        <div class="card">
+        <div class="grid-buttons">
+            <div class="card-auto" onclick="montrePaj('paj-depot')"><i class="fas fa-wallet"></i><br>Dépôt</div>
+            <div class="card-auto" onclick="montrePaj('paj-retrait')"><i class="fas fa-hand-holding-usd"></i><br>Retrait</div>
+        </div>
+
+        <div class="card-auto" style="text-align: left; margin-bottom: 15px;">
+            <h3 style="color:var(--primary); margin-top:0;">Évaluation VIP (7 Niveaux)</h3>
             <table>
                 <tr><th>Niveau</th><th>Prix</th><th>Profit/J</th></tr>
-                <tr><td>VIP 1</td><td>20$</td><td>1.4$ (7%)</td></tr>
-                <tr><td>VIP 2</td><td>60$</td><td>4.8$ (8%)</td></tr>
-                <tr><td>VIP 3</td><td>150$</td><td>13.5$ (9%)</td></tr>
-                <tr><td>VIP 4</td><td>400$</td><td>40$ (10%)</td></tr>
-                <tr><td>VIP 5</td><td>1000$</td><td>120$ (12%)</td></tr>
-                <tr><td>VIP 6</td><td>2500$</td><td>375$ (15%)</td></tr>
-                <tr><td>VIP 7</td><td>6000$</td><td>1200$ (20%)</td></tr>
+                <tr><td>VIP 1</td><td>20$</td><td>1.40$ (7%)</td></tr>
+                <tr><td>VIP 2</td><td>60$</td><td>4.80$ (8%)</td></tr>
+                <tr><td>VIP 3</td><td>150$</td><td>13.50$ (9%)</td></tr>
+                <tr><td>VIP 4</td><td>400$</td><td>40.00$ (10%)</td></tr>
+                <tr><td>VIP 5</td><td>1000$</td><td>120.00$ (12%)</td></tr>
+                <tr><td>VIP 6</td><td>2500$</td><td>375.00$ (15%)</td></tr>
+                <tr><td>VIP 7</td><td>6000$</td><td>1200.00$ (20%)</td></tr>
             </table>
         </div>
     </div>
 
-    <div id="paj-vip" class="paj">
-        <h2>Plans d'Investissement</h2>
-        <div id="vip-list"></div>
-    </div>
-
-    <div id="paj-task" class="paj">
-        <h2>Tâche Quotidienne (1/1)</h2>
-        <div class="card">
-            <p>Cliquez sur le bouton pour générer votre profit quotidien.</p>
-            <button class="btn-main" id="btn-task" onclick="faireTask()">Exécuter la tâche</button>
-            <p id="task-msg" style="color:var(--primary); margin-top:10px;"></p>
-        </div>
-    </div>
-
     <div id="paj-depot" class="paj">
-        <h2>Déposer USDT (BEP20)</h2>
-        <div class="card" style="text-align:center;">
-            <p style="color:#aaa;">Minimum: 20 USDT</p>
-            <div style="background:#000; padding:15px; border-radius:10px; border:1px dashed var(--primary); word-break:break-all; font-family:monospace;">
+        <h2>Déposer USDT</h2>
+        <div class="card-auto">
+            <p>Réseau: <b>BSC BNB Smart Chain (BEP20)</b></p>
+            <div style="background:#000; padding:15px; border-radius:10px; border:1px solid var(--primary); word-break:break-all;">
                 0x93ba288d4fe6c64234a44f3234cbf6949e76246e
             </div>
-            <br>
-            <button class="btn-main" onclick="copyAdr()">Copier l'adresse</button>
-            <input type="number" placeholder="Montant envoyé">
-            <button class="btn-main" style="background:#fff; margin-top:10px;" onclick="alert('Paiement en cours de vérification...')">Soumettre</button>
+            <p><small>Minimum dépôt: 20 USDT</small></p>
+            <button class="btn-main" onclick="copy()">Copier l'adresse</button>
         </div>
     </div>
 
     <div id="paj-retrait" class="paj">
-        <h2>Retrait de Fonds</h2>
-        <div class="card">
-            <p style="color:#aaa;">Minimum: 2 USDT</p>
-            <input type="number" placeholder="Montant à retirer">
-            <input type="text" placeholder="Adresse USDT BEP20">
-            <button class="btn-main" style="background:var(--red); color:white;" onclick="alert('Retrait soumis! Attente 30min.')">Confirmer Retrait</button>
+        <h2>Retrait / Transfert</h2>
+        <div class="card-auto">
+            <p>Minimum: 2 USDT</p>
+            <input type="number" placeholder="Montant">
+            <input type="text" placeholder="Adresse BEP20">
+            <button class="btn-main" style="background:#fff">Retirer</button>
         </div>
         <h3>Transfert Interne</h3>
-        <div class="card">
-            <input type="email" placeholder="Email du destinataire">
+        <div class="card-auto">
+            <input type="email" placeholder="Email destinataire">
             <input type="number" placeholder="Montant">
-            <button class="btn-main" style="background:var(--blue); color:white;">Transférer</button>
+            <button class="btn-main">Transférer</button>
+        </div>
+    </div>
+
+    <div id="paj-tache" class="paj">
+        <h2>Mission Quotidienne</h2>
+        <div class="card-auto">
+            <p>Vous avez <b>1 tâche</b> disponible pour VIP 1.</p>
+            <button class="btn-main" onclick="alert('Tâche accomplie ! +1.40 USDT')">Exécuter la Mission</button>
         </div>
     </div>
 
     <div id="paj-ekip" class="paj">
         <h2>Mon Équipe</h2>
-        <div class="card" style="background:var(--primary); color:#000;">
-            <small>Lien d'invitation:</small><br>
-            <b id="ref-link">https://starplus.com/reg?ref=...</b>
+        <div class="grid-buttons">
+            <div class="card-auto">Lvl 1<br><b>10%</b></div>
+            <div class="card-auto">Lvl 2<br><b>5%</b></div>
+            <div class="card-auto">Lvl 3<br><b>2%</b></div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-            <div class="card" style="text-align:center;">Lvl 1<br><b>10%</b></div>
-            <div class="card" style="text-align:center;">Lvl 2<br><b>5%</b></div>
-            <div class="card" style="text-align:center;">Lvl 3<br><b>2%</b></div>
+        <div class="card-auto">
+            <p>Lien d'invitation:</p>
+            <small id="mylink" style="color:var(--primary)"></small>
         </div>
     </div>
 
-    <nav id="main-nav" class="nav-bar" style="display:none;">
+    <nav id="nav" class="nav-bar" style="display:none;">
         <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home fa-lg"></i><br>Maison</div>
-        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown fa-lg"></i><br>VIP</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-list-check fa-lg"></i><br>Tâches</div>
+        <div class="nav-item" onclick="montrePaj('paj-tache', this)"><i class="fas fa-tasks fa-lg"></i><br>Tâche</div>
         <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users fa-lg"></i><br>Équipe</div>
         <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Sortie</div>
     </nav>
 
     <script>
-        const vips = [
-            {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
-            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
-        ];
-
-        function connexion() {
-            const email = document.getElementById('email').value;
-            if(!email) return alert("Entrez un email");
-            document.getElementById('paj-auth').style.display = 'none';
-            document.getElementById('main-nav').style.display = 'flex';
-            document.getElementById('ref-link').innerText = "https://starplus.com/reg?ref=" + email.split('@')[0];
+        function logMeIn() {
+            const email = document.getElementById('u-email').value;
+            if(!email) return alert("Email requis");
+            document.getElementById('paj-login').style.display='none';
+            document.getElementById('nav').style.display='flex';
+            document.getElementById('user-id').innerText = "Compte: " + email;
+            document.getElementById('mylink').innerText = "https://starplus-cmd.github.io/reg?ref=" + email.split('@')[0];
             montrePaj('paj-home');
         }
 
@@ -158,32 +160,10 @@
             }
         }
 
-        function faireTask() {
-            const btn = document.getElementById('btn-task');
-            btn.disabled = true;
-            btn.innerText = "Traitement...";
-            setTimeout(() => {
-                document.getElementById('task-msg').innerText = "✅ Tâche terminée! +1.40 USDT ajoutés.";
-                btn.innerText = "Terminé pour aujourd'hui";
-            }, 2000);
-        }
-
-        function copyAdr() {
+        function copy() {
             navigator.clipboard.writeText("0x93ba288d4fe6c64234a44f3234cbf6949e76246e");
-            alert("Adresse BEP20 Copiée!");
+            alert("Adresse copiée !");
         }
-
-        // Jenere lis VIP
-        const container = document.getElementById('vip-list');
-        vips.forEach(v => {
-            container.innerHTML += `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>VIP ${v.n}</b><br><small>Prix: ${v.p} USDT</small></div>
-                    <div style="color:var(--primary)">${v.r}$/jour</div>
-                    <button onclick="montrePaj('paj-depot')" style="padding:5px 10px; border-radius:8px; border:none; background:var(--primary); font-weight:bold;">Activer</button>
-                </div>
-            `;
-        });
     </script>
 </body>
 </html>
