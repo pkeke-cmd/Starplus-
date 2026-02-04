@@ -1,264 +1,338 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starplus | Investment System</title>
+    <title>Starplus | Future of Investment</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; --blue: #3498db; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
-        .paj { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; --gray: #888; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        .paj { display: none; padding: 20px; animation: fadeIn 0.3s ease-in-out; }
         .paj.aktive { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- UI COMPONENTS --- */
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
-        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 2px solid var(--primary); padding: 25px; border-radius: 25px; text-align: center; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; transition: 0.3s; }
-        .btn-main:disabled { background: #444; color: #888; cursor: not-allowed; }
+        /* --- UI ELEMENTS --- */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; position: relative; overflow: hidden; }
+        .balance-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(192,255,0,0.05) 0%, transparent 70%); }
         
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-        th, td { padding: 12px; border: 1px solid #2d2d2d; text-align: center; }
-        th { background: var(--primary); color: #000; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: rgba(0,0,0,0.5); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        
+        .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-        /* --- NAV --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 10px; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
+        /* --- TRANSACTIONS --- */
+        .tranzaksyon { font-size: 13px; padding: 10px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .status { padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+        .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
+        .status.wait { background: rgba(255,165,0,0.1); color: orange; }
+
+        /* --- NAV BAR --- */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(22,26,30,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; transition: 0.3s; }
+        .nav-item i { font-size: 20px; margin-bottom: 5px; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+
+        .share-btn { padding: 12px; border-radius: 10px; color: white; text-decoration: none; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
+        .wa { background: #25d366; } .fb { background: #1877f2; }
     </style>
 </head>
 <body>
 
     <div id="paj-auth" class="paj aktive">
         <div style="text-align:center; margin-top:50px;">
-            <h1 style="color:var(--primary); font-size:40px;">STARPLUS</h1>
-            <div class="card" style="width:85%; margin:auto;">
+            <h1 style="color:var(--primary); font-size:45px; margin-bottom:10px;">STARPLUS</h1>
+            <p style="color:var(--gray); margin-bottom:30px;">L'investissement intelligent commence ici.</p>
+            <div class="card" style="width:90%; margin:auto;">
                 <h3 id="auth-title">Créer un compte</h3>
-                <input type="email" id="email" placeholder="Email">
+                <div id="signup-fields">
+                    <input type="text" id="username" placeholder="Nom d'utilisateur">
+                </div>
+                <input type="email" id="email" placeholder="Adresse Email">
                 <input type="password" id="pass" placeholder="Mot de passe">
-                <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
-                <button class="btn-main" id="btn-login" onclick="connexion()">S'inscrire / Connexion</button>
+                <div id="confirm-pass-field">
+                    <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
+                    <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                </div>
+                <button class="btn-main" id="btn-auth" onclick="handleAuth()">Commencer</button>
+                <p id="toggle-auth" onclick="toggleAuthMode()" style="color:var(--primary); margin-top:20px; font-size:14px; cursor:pointer; font-weight:600;">
+                    Déjà inscrit ? Connectez-vous
+                </p>
             </div>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small>Solde Total (USDT)</small>
-            <h1 id="user-balance" style="font-size: 35px; color: var(--primary); margin: 10px 0;">0.00</h1>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff">Dépôt</button>
-                <button class="btn-main" onclick="montrePaj('paj-retrait')" style="background:var(--primary)">Retrait</button>
+            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px;">Solde Disponible</small>
+            <h1 style="font-size: 40px; margin: 15px 0;"><span id="user-balance">0.00</span> <span style="font-size:18px; color:var(--primary);">USDT</span></h1>
+            <div style="display:flex; gap:12px; margin-top:20px;">
+                <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff;">Dépôt</button>
+                <button class="btn-main" onclick="montrePaj('paj-retrait')">Retrait</button>
             </div>
         </div>
 
         <div id="admin-shortcut" style="display:none; margin-top: 15px;">
-            <button class="btn-main" style="background:orange; color: #000;" onclick="montrePaj('paj-admin'); chajeDepotAdmin();">PANEL ADMIN</button>
+            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMINISTRATION</button>
         </div>
 
-        <h3>Évaluation des Revenus VIP</h3>
-        <div class="card">
-            <table>
-                <tr><th>Niveau</th><th>Prix</th><th>Profit/J</th></tr>
-                <tr><td>VIP 1</td><td>20$</td><td>1.4$ (7%)</td></tr>
-                <tr><td>VIP 2</td><td>60$</td><td>4.8$ (8%)</td></tr>
-                <tr><td>VIP 3</td><td>150$</td><td>13.5$ (9%)</td></tr>
-                <tr><td>VIP 4</td><td>400$</td><td>40$ (10%)</td></tr>
-                <tr><td>VIP 5</td><td>1000$</td><td>120$ (12%)</td></tr>
-                <tr><td>VIP 6</td><td>2500$</td><td>375$ (15%)</td></tr>
-                <tr><td>VIP 7</td><td>6000$</td><td>1200$ (20%)</td></tr>
-            </table>
+        <h3 style="margin-top:25px;">Statut du Compte</h3>
+        <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
+            <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">Username</small><br><b id="display-user">...</b></div>
+            <div><small style="color:var(--gray);">Profit/J</small><br><b id="daily-profit">0.00</b></div>
+        </div>
+
+        <h3>Historique Récent</h3>
+        <div class="card" id="history-list">
+            <p style="color:var(--gray); text-align:center; font-size:12px;">Aucune activité récente.</p>
         </div>
     </div>
 
     <div id="paj-vip" class="paj">
-        <h2>Plans d'Investissement</h2>
+        <h2 style="text-align:center; color:var(--primary);">Plans d'Investissement</h2>
         <div id="vip-list"></div>
     </div>
 
     <div id="paj-task" class="paj">
-        <h2>Tâche Quotidienne (1/1)</h2>
-        <div class="card">
-            <p>Cliquez sur le bouton pour générer votre profit quotidien.</p>
-            <button class="btn-main" id="btn-task" onclick="faireTask()">Exécuter la tâche</button>
-            <p id="task-msg" style="color:var(--primary); margin-top:10px;"></p>
+        <h2 style="text-align:center;">Tâches Quotidiennes</h2>
+        <div class="card" style="text-align:center; padding:40px 20px;">
+            <div id="task-icon-container" style="margin-bottom:20px;">
+                <i class="fas fa-gem fa-4x" style="color:var(--primary);"></i>
+            </div>
+            <p id="task-info" style="color:var(--gray); margin-bottom:20px;">Activez un pack VIP pour commencer à générer des profits.</p>
+            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>Récupérer Commission</button>
+            <p id="task-msg" style="margin-top:20px; font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="paj-depot" class="paj">
-        <h2>Déposer USDT (BEP20)</h2>
+        <h2>Recharger mon compte</h2>
         <div class="card" style="text-align:center;">
-            <p style="color:#aaa;">Minimum: 20 USDT</p>
-            <div style="background:#000; padding:15px; border-radius:10px; border:1px dashed var(--primary); word-break:break-all; font-family:monospace;">
+            <p style="color:var(--gray); font-size:14px;">Envoyez USDT (BEP20) à l'adresse ci-dessous</p>
+            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:10px solid #fff; border-radius:15px; margin:15px 0;">
+            <div style="background:#000; padding:15px; border-radius:12px; font-family:monospace; font-size:12px; border:1px dashed #444; word-break:break-all; margin-bottom:15px;">
                 0x93ba288d4fe6c64234a44f3234cbf6949e76246e
             </div>
-            <br>
-            <button class="btn-main" onclick="copyAdr()">Copier l'adresse</button>
-            <input type="number" id="montant-depot" placeholder="Montant envoyé (USDT)">
-            <button class="btn-main" id="btn-soumettre-depot" style="background:#fff; margin-top:10px;" onclick="voyePemanFirebase()">Soumettre</button>
+            <button class="btn-main" onclick="copyAdr()" style="font-size:12px; padding:10px; width:auto; margin-bottom:20px;">Copier l'adresse</button>
+            <hr style="border:0; border-top:1px solid #333; margin-bottom:20px;">
+            <input type="number" id="montant-depot" placeholder="Montant transféré (USDT)">
+            <button class="btn-main" id="btn-soumettre-depot" style="background:#fff;" onclick="voyePeman()">Confirmer le dépôt</button>
         </div>
-    </div>
-
-    <div id="paj-admin" class="paj">
-        <h2>Gestion des Dépôts</h2>
-        <div id="lis-peman-admin">
-            <p>Chargement des dépôts en attente...</p>
-        </div>
-        <button class="btn-main" onclick="montrePaj('paj-home')" style="margin-top:20px; background: #555; color: #fff;">Retour à l'accueil</button>
     </div>
 
     <div id="paj-retrait" class="paj">
-        <h2>Retrait de Fonds</h2>
+        <h2>Retrait de fonds</h2>
         <div class="card">
-            <p style="color:#aaa;">Minimum: 2 USDT</p>
-            <input type="number" placeholder="Montant à retirer">
-            <input type="text" placeholder="Adresse USDT BEP20">
-            <button class="btn-main" style="background:var(--red); color:white;">Confirmer Retrait</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <span>Disponible:</span>
+                <b style="color:var(--primary);"><span id="retrait-bal">0.00</span> USDT</b>
+            </div>
+            <input type="number" id="ret-montant" placeholder="Montant (Min 1 USDT)">
+            <input type="text" id="ret-adr" placeholder="Votre adresse USDT BEP20">
+            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">Lancer le retrait</button>
         </div>
     </div>
 
     <div id="paj-ekip" class="paj">
-        <h2>Mon Équipe</h2>
-        <div class="card" style="background:var(--primary); color:#000; cursor:pointer;" onclick="copyLink()">
-            <small>Cliquez pour copier votre lien :</small><br>
-            <b id="ref-link">Chargement...</b>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-            <div class="card" style="text-align:center;">Lvl 1<br><b>10%</b></div>
-            <div class="card" style="text-align:center;">Lvl 2<br><b>5%</b></div>
-            <div class="card" style="text-align:center;">Lvl 3<br><b>2%</b></div>
+        <h2>Programme de Parrainage</h2>
+        <div class="card" style="text-align:center;">
+            <p style="color:var(--gray);">Gagnez jusqu'à 15% de commission sur vos amis.</p>
+            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin:15px 0; border:1px solid #333;">...</div>
+            <button class="btn-main" onclick="copyLink()">Copier mon lien</button>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <a href="#" id="share-wa" class="share-btn wa"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" id="share-fb" class="share-btn fb"><i class="fab fa-facebook-f"></i></a>
+            </div>
         </div>
     </div>
 
+    <div id="paj-admin" class="paj">
+        <h2 style="color:orange;">Administration</h2>
+        <div id="admin-list">Chargement des requêtes...</div>
+        <button class="btn-main" onclick="montrePaj('paj-home')" style="margin-top:20px; background:#444; color:#fff;">Retour Accueil</button>
+    </div>
+
     <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home fa-lg"></i><br>Maison</div>
-        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown fa-lg"></i><br>VIP</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-list-check fa-lg"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users fa-lg"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Sortie</div>
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
+        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
+        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-hand-holding-usd"></i><br>Tâches</div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Quitter</div>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // CONFIGURATION FIREBASE
+        // CONFIGURATION - METE KÒD PA W YO LA
         const firebaseConfig = {
-            apiKey: "AIzaSy...", // Ranplase sa ak API Key ou
+            apiKey: "API_KEY_PA_W",
             authDomain: "starplus-47411.firebaseapp.com",
             databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
             projectId: "starplus-47411",
             storageBucket: "starplus-47411.appspot.com",
-            messagingSenderId: "...", // Ranplase sa
-            appId: "..." // Ranplase sa
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        let currentUser = null;
+        let isLogin = false;
 
-        // Global functions for HTML access
-        window.db = db; window.ref = ref; window.set = set; window.get = get; window.update = update; window.onValue = onValue; window.remove = remove;
+        const vips = [
+            {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
+            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
+        ];
 
-        // Detekte referral nan URL
-        window.addEventListener('load', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const r = urlParams.get('ref');
-            if(r) document.getElementById('ref-code').value = r;
-        });
+        // GESTION AUTH
+        window.toggleAuthMode = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
+            document.getElementById('signup-fields').style.display = isLogin ? "none" : "block";
+            document.getElementById('confirm-pass-field').style.display = isLogin ? "none" : "block";
+            document.getElementById('btn-auth').innerText = isLogin ? "Se Connecter" : "S'inscrire";
+            document.getElementById('toggle-auth').innerText = isLogin ? "Pas encore de compte ? S'inscrire" : "Déjà inscrit ? Se connecter";
+        };
 
-        // Fonksyon Connexion / Inscription
-        window.connexion = async () => {
+        window.handleAuth = async () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('pass').value.trim();
+            const user = document.getElementById('username').value.trim();
+            const confirm = document.getElementById('pass-confirm').value.trim();
             const refCode = document.getElementById('ref-code').value.trim();
 
             if(!email || !pass) return alert("Veuillez remplir tous les champs.");
+            const id = email.replace(/\./g, '_');
+            const uRef = ref(db, 'users/' + id);
 
-            const userId = email.replace(/\./g, '_');
-            const userRef = ref(db, 'users/' + userId);
-            const snap = await get(userRef);
-
-            if(!snap.exists()) {
-                await set(userRef, { email, pass, balance: 0, refBy: refCode || "aucun", vip: 0 });
-                alert("Compte créé avec succès !");
+            if(!isLogin) {
+                if(pass !== confirm) return alert("Les mots de passe ne correspondent pas.");
+                const check = await get(uRef);
+                if(check.exists()) return alert("Cet email est déjà utilisé.");
+                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, refBy: refCode || "aucun", lastTask: "" });
+            } else {
+                const snap = await get(uRef);
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants invalides.");
             }
+            currentUser = id;
+            initApp(email);
+        };
 
-            // Dekouvri bouton Admin si email la se pou ou
-            if(email === "admin@starplus.com") {
-                document.getElementById('admin-shortcut').style.display = 'block';
-            }
-
+        function initApp(email) {
             document.getElementById('paj-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
-            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + email.split('@')[0];
             
-            // Swiv balans an tan reyèl
-            onValue(userRef, (s) => {
-                if(s.exists()) document.getElementById('user-balance').innerText = parseFloat(s.val().balance).toFixed(2);
+            // Referans
+            const link = window.location.origin + window.location.pathname + "?ref=" + email.split('@')[0];
+            document.getElementById('ref-link').innerText = link;
+            document.getElementById('share-wa').href = `https://wa.me/?text=Gagnez de l'argent avec moi sur Starplus: ${link}`;
+            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${link}`;
+
+            if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = 'block';
+
+            // Live Update
+            onValue(ref(db, 'users/' + currentUser), (snap) => {
+                const d = snap.val();
+                document.getElementById('user-balance').innerText = d.balance.toFixed(2);
+                document.getElementById('retrait-bal').innerText = d.balance.toFixed(2);
+                document.getElementById('display-user').innerText = d.username;
+                document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
+                
+                const prof = vips.find(v => v.n == d.vip).r;
+                document.getElementById('daily-profit').innerText = prof.toFixed(2);
+                
+                const btn = document.getElementById('btn-task');
+                btn.disabled = (d.vip === 0);
+                document.getElementById('task-info').innerText = d.vip > 0 ? `Votre profit VIP ${d.vip} est prêt.` : "Activez un VIP pour commencer.";
             });
 
+            // Chaje History
+            loadHistory();
+            montrePaj('paj-home');
+        }
+
+        // TRANSAKSYON
+        window.voyePeman = async () => {
+            const m = document.getElementById('montant-depot').value;
+            if(m < 20) return alert("Minimum 20 USDT.");
+            const newDepot = push(ref(db, 'depots_pendants'));
+            await set(newDepot, { userId: currentUser, montant: parseFloat(m), dat: new Date().toLocaleString(), status: "wait" });
+            alert("Requête de dépôt envoyée !");
+            document.getElementById('montant-depot').value = "";
             montrePaj('paj-home');
         };
 
-        // Fonksyon voye Peman
-        window.voyePemanFirebase = async () => {
-            const montant = document.getElementById('montant-depot').value;
-            const email = document.getElementById('email').value;
-            if(!montant || montant < 20) return alert("Montant minimum : 20 USDT");
+        window.voyeRetrait = async () => {
+            const m = document.getElementById('ret-montant').value;
+            const adr = document.getElementById('ret-adr').value;
+            if(m < 1) return alert("Minimum 1 USDT.");
+            
+            const uRef = ref(db, 'users/' + currentUser);
+            const snap = await get(uRef);
+            if(snap.val().balance < m) return alert("Solde insuffisant.");
 
-            const btn = document.getElementById('btn-soumettre-depot');
-            btn.disabled = true; btn.innerText = "Traitement...";
-
-            try {
-                await set(ref(db, 'depots_pendants/' + Date.now()), {
-                    itilizate: email,
-                    montant: montant,
-                    status: "En attente",
-                    dat: new Date().toLocaleString()
-                });
-                alert("✅ Dépôt soumis ! L'admin va vérifier.");
-                document.getElementById('montant-depot').value = "";
-                montrePaj('paj-home');
-            } catch (e) { alert("Erreur : " + e.message); }
-            finally { btn.disabled = false; btn.innerText = "Soumettre"; }
+            await update(uRef, { balance: snap.val().balance - parseFloat(m) });
+            await push(ref(db, 'retraits_pendants'), { userId: currentUser, montant: parseFloat(m), adresse: adr, dat: new Date().toLocaleString() });
+            alert("Demande de retrait en cours.");
+            montrePaj('paj-home');
         };
 
-        // Fonksyon Admin (Lis depo)
-        window.chajeDepotAdmin = () => {
-            const container = document.getElementById('lis-peman-admin');
+        window.faireTask = async () => {
+            const uRef = ref(db, 'users/' + currentUser);
+            const snap = await get(uRef);
+            const d = snap.val();
+            const today = new Date().toDateString();
+
+            if(d.lastTask === today) return alert("Tâche déjà effectuée aujourd'hui !");
+
+            const profit = vips.find(v => v.n == d.vip).r;
+            await update(uRef, { balance: d.balance + profit, lastTask: today });
+            document.getElementById('task-msg').innerText = `✅ +${profit} USDT ajouté !`;
+            setTimeout(() => document.getElementById('task-msg').innerText = "", 3000);
+        };
+
+        // ADMIN LOGIC (AUTOMATIQUE VIP)
+        window.chajeAdmin = () => {
             onValue(ref(db, 'depots_pendants'), (snap) => {
-                container.innerHTML = "";
-                const data = snap.val();
-                if(!data) return container.innerHTML = "<p>Aucun dépôt en attente.</p>";
-                for(let id in data) {
-                    const d = data[id];
-                    container.innerHTML += `
-                        <div class="card" style="border-left: 4px solid gold;">
-                            <p><b>User:</b> ${d.itilizate}</p>
-                            <p><b>Montant:</b> ${d.montant} USDT</p>
-                            <button class="btn-main" onclick="valideDepot('${id}', '${d.itilizate}', ${d.montant})">Approuver</button>
+                const cont = document.getElementById('admin-list');
+                cont.innerHTML = "";
+                if(!snap.exists()) return cont.innerHTML = "Aucun dépôt en attente.";
+                snap.forEach((child) => {
+                    const d = child.val();
+                    cont.innerHTML += `
+                        <div class="card">
+                            <p>Utilisateur: <b>${d.userId}</b></p>
+                            <p>Montant: <b>${d.montant} USDT</b></p>
+                            <button class="btn-main" onclick="valideDepot('${child.key}', '${d.userId}', ${d.montant})">Approuver & VIP Auto</button>
                         </div>`;
-                }
+                });
             });
         };
 
-        window.valideDepot = async (id, email, montant) => {
-            const userId = email.replace(/\./g, '_');
-            const uRef = ref(db, 'users/' + userId);
+        window.valideDepot = async (key, uid, m) => {
+            const uRef = ref(db, 'users/' + uid);
             const uSnap = await get(uRef);
-            
-            if(uSnap.exists()) {
-                const balAktyel = parseFloat(uSnap.val().balance || 0);
-                await update(uRef, { balance: balAktyel + parseFloat(montant) });
-                await remove(ref(db, 'depots_pendants/' + id));
-                alert("Dépôt validé !");
+            const d = uSnap.val();
+            const nouvoBal = d.balance + m;
+
+            // VIP AUTOMATIQUE
+            let nouvoVIP = d.vip;
+            const reversedVips = [...vips].sort((a,b) => b.p - a.p);
+            for(let v of reversedVips) {
+                if(nouvoBal >= v.p) { nouvoVIP = v.n; break; }
             }
+
+            await update(uRef, { balance: nouvoBal, vip: nouvoVIP });
+            await remove(ref(db, 'depots_pendants/' + key));
+            alert("Validé avec succès !");
         };
 
-        // UI Functions
+        // UI HELPERS
         window.montrePaj = (id, el) => {
             document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
             document.getElementById(id).classList.add('aktive');
@@ -268,38 +342,25 @@
             }
         };
 
-        window.copyAdr = () => {
-            navigator.clipboard.writeText("0x93ba288d4fe6c64234a44f3234cbf6949e76246e");
-            alert("Adresse copiée !");
-        };
+        window.copyAdr = () => { navigator.clipboard.writeText("0x93ba288d4fe6c64234a44f3234cbf6949e76246e"); alert("Adresse copiée !"); };
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
 
-        window.copyLink = () => {
-            const link = document.getElementById('ref-link').innerText;
-            navigator.clipboard.writeText(link);
-            alert("Lien d'invitation copié !");
-        };
+        function loadHistory() {
+            // Simulation ou onValue depann de bezwen ou
+            const list = document.getElementById('history-list');
+            list.innerHTML = `<div class="tranzaksyon"><span>Bienvenue sur Starplus</span><span class="status ok">INFO</span></div>`;
+        }
 
-        // Task Mockup
-        window.faireTask = () => {
-            const btn = document.getElementById('btn-task');
-            btn.disabled = true; btn.innerText = "Génération du profit...";
-            setTimeout(() => {
-                document.getElementById('task-msg').innerText = "✅ Succès ! Votre profit a été ajouté.";
-            }, 2000);
-        };
-
-        // VIP Generation
-        const vips = [
-            {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
-            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
-        ];
+        // VIP LIST GENERATOR
         const vipCont = document.getElementById('vip-list');
-        vips.forEach(v => {
+        vips.slice(1).forEach(v => {
             vipCont.innerHTML += `
                 <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>VIP ${v.n}</b><br><small>Prix: ${v.p} USDT</small></div>
-                    <div style="color:var(--primary)">${v.r}$/j</div>
-                    <button onclick="montrePaj('paj-depot')" style="padding:8px 15px; border-radius:8px; border:none; background:var(--primary); font-weight:bold;">Acheter</button>
+                    <div><b style="font-size:18px;">VIP ${v.n}</b><br><small style="color:var(--gray);">Prix: ${v.p} USDT</small></div>
+                    <div style="text-align:right;">
+                        <b style="color:var(--primary);">${v.r} USDT/J</b><br>
+                        <button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px 10px; border-radius:5px; font-weight:bold; margin-top:5px; cursor:pointer;">Activer</button>
+                    </div>
                 </div>`;
         });
     </script>
