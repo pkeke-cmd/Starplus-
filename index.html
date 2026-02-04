@@ -1,9 +1,9 @@
-          <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starplus | VIP Dashboard</title>
+    <title>Starplus | Système VIP Automatique</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -12,120 +12,166 @@
             --card: #1c1f26;
             --text: #ffffff;
             --blue: #2d65ff;
-            --red: #ff4757;
             --gold: #ffd700;
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
-        .paj { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        .paj { display: none; padding: 20px; animation: slideIn 0.3s ease-out; }
         .paj.aktive { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* --- LOGIN --- */
-        #paj-login { background: var(--bg); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .input-group { width: 85%; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #000; color: #fff; box-sizing: border-box; }
-
-        /* --- UI ELEMENTS --- */
-        .balance-card { background: linear-gradient(135deg, var(--primary), #8bc34a); color: #000; padding: 25px; border-radius: 24px; margin-bottom: 20px; }
-        .card-auto { background: var(--card); border-radius: 18px; padding: 18px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; }
+        /* --- AUTHENTICATION --- */
+        #paj-auth { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .auth-card { width: 85%; background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #444; background: #000; color: #fff; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary); }
         
-        /* --- TABLO EVALYASYON --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #000; border-radius: 10px; overflow: hidden; font-size: 13px; }
-        th, td { padding: 10px; border: 1px solid #2d2d2d; text-align: center; }
-        th { background: var(--primary); color: #000; }
+        /* --- DASHBOARD ELEMENTS --- */
+        .balance-card { background: linear-gradient(135deg, var(--primary), #8bc34a); color: #000; padding: 30px; border-radius: 28px; margin-bottom: 20px; text-align: center; position: relative; }
+        .card-auto { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; font-size: 16px; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.95); }
+        
+        /* --- TABLES VIP --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #000; border-radius: 15px; overflow: hidden; }
+        th, td { padding: 12px; border: 1px solid #2d2d2d; text-align: center; font-size: 13px; }
+        th { background: var(--primary); color: #000; font-weight: 800; }
 
-        /* --- EKIP STYLE --- */
+        /* --- TEAM GRID --- */
         .team-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .member { background: var(--card); padding: 10px; border-radius: 12px; border: 1px solid #333; font-size: 11px; }
+        .member { background: #000; padding: 15px 5px; border-radius: 15px; border: 1px solid #333; text-align: center; }
+        .member i { color: var(--primary); margin-bottom: 8px; }
 
-        /* --- NAV --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 100; }
-        .nav-item { color: #666; text-align: center; font-size: 10px; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
+        /* --- NAVIGATION --- */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
-    <div id="paj-login" class="paj aktive">
-        <h1 style="color: var(--primary); font-size: 40px; margin-bottom: 10px;">STARPLUS</h1>
-        <div class="input-group">
-            <h3>Bienvenue</h3>
-            <input type="email" id="user-email" placeholder="Email">
-            <input type="password" id="user-pass" placeholder="Mot de passe">
-            <button class="btn-main" style="background: var(--primary); color: #000;" onclick="connexion()">Se Connecter</button>
+    <div id="paj-auth" class="paj aktive">
+        <h1 style="color: var(--primary); font-size: 45px; margin: 0;">STARPLUS</h1>
+        <p style="color: #888; margin-bottom: 30px;">Plateforme d'investissement VIP</p>
+        
+        <div class="auth-card">
+            <h3 id="auth-title">Créer un compte</h3>
+            <input type="email" id="email" placeholder="Adresse Email">
+            <input type="password" id="pass" placeholder="Mot de passe">
+            <button class="btn-main" onclick="validerAuth()">S'inscrire / Connexion</button>
+            <p style="font-size: 11px; color: #555; margin-top: 15px;">En vous connectant, vous acceptez nos termes.</p>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small>Solde Actuel (USDT)</small>
-            <h1 style="font-size: 35px; margin: 10px 0;">500.00</h1>
-            <p id="display-email" style="font-size: 12px; opacity: 0.8;"></p>
+            <small style="text-transform: uppercase; letter-spacing: 1px;">Solde du Compte</small>
+            <h1 style="font-size: 40px; margin: 10px 0;">500.00 <span style="font-size: 18px;">USDT</span></h1>
+            <div style="background: rgba(0,0,0,0.1); padding: 5px 15px; border-radius: 20px; display: inline-block;">
+                <span id="user-display" style="font-size: 12px; font-weight: bold;"></span>
+            </div>
         </div>
 
         <div class="card-auto">
-            <h3 style="margin-top:0; color:var(--primary)">📊 Évaluation des Niveaux</h3>
+            <h3 style="margin:0 0 10px 0; color:var(--primary)"><i class="fas fa-crown"></i> Évaluation des Profits</h3>
             <table>
-                <tr><th>Niveau</th><th>Prix</th><th>Profit/J</th></tr>
-                <tr><td>VIP 1</td><td>20$</td><td>1.4$</td></tr>
-                <tr><td>VIP 2</td><td>60$</td><td>4.8$</td></tr>
-                <tr><td>VIP 3</td><td>150$</td><td>13.5$</td></tr>
-                <tr><td>VIP 4</td><td>400$</td><td>40$</td></tr>
+                <tr><th>Niveau</th><th>Prix</th><th>Gain/J</th></tr>
+                <tr><td>VIP 1</td><td>20$</td><td>1.40$</td></tr>
+                <tr><td>VIP 2</td><td>60$</td><td>4.80$</td></tr>
+                <tr><td>VIP 3</td><td>150$</td><td>13.50$</td></tr>
+                <tr><td>VIP 4</td><td>400$</td><td>40.00$</td></tr>
             </table>
         </div>
     </div>
 
     <div id="paj-tach" class="paj">
-        <h2 style="color:var(--primary)">Mission du Jour</h2>
+        <h2 style="color:var(--primary)">Missions VIP</h2>
         <div class="card-auto">
-            <b>Like & Share Facebook</b><br>
-            <small>Gain: 0.50 USDT</small>
-            <button class="btn-main" style="background:var(--blue); color:white; padding:8px; margin-top:10px;" onclick="window.open('https://facebook.com')">Ouvrir le lien</button>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <b>Vidéo Marketing Facebook</b><br>
+                    <small style="color:var(--primary)">Récompense: 0.80 USDT</small>
+                </div>
+                <button onclick="window.open('https://facebook.com')" style="background:var(--blue); color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold;">Ouvrir</button>
+            </div>
         </div>
-        
-        <div class="card-auto">
-            <h3>Soumettre la preuve</h3>
-            <input type="text" id="id-tach" placeholder="ID de l'utilisateur">
-            <input type="text" id="link-tach" placeholder="Lien de la preuve">
-            <button class="btn-main" style="background:var(--primary); color:#000;" onclick="alert('Prèv voye bay admin!')">Envoyer la preuve</button>
+
+        <div class="card-auto" style="margin-top: 20px;">
+            <h3 style="margin-top:0;">Soumettre le Rapport</h3>
+            <input type="text" id="task-id" placeholder="Votre ID Starplus">
+            <input type="text" id="task-link" placeholder="Lien du screenshot (preuve)">
+            <button class="btn-main" onclick="alert('Rapport envoyé avec succès ! Un administrateur va valider votre gain.')">Vérifier la Mission</button>
         </div>
     </div>
 
     <div id="paj-ekip" class="paj">
         <h2 style="color:var(--primary)">Notre Équipe</h2>
-        <div class="card-auto">
-            <p>Starplus est géré par des experts en finance et technologie.</p>
+        <div class="card-auto" style="text-align: center;">
+            <p style="color:#aaa; font-size: 14px;">Starplus est soutenu par une équipe d'experts financiers disponible 24h/24.</p>
             <div class="team-grid">
-                <div class="member"><i class="fas fa-user-tie fa-2x"></i><br><b>CEO</b><br>Admin</div>
-                <div class="member"><i class="fas fa-headset fa-2x"></i><br><b>Support</b><br>24/7</div>
-                <div class="member"><i class="fas fa-vault fa-2x"></i><br><b>Finance</b><br>Pay</div>
+                <div class="member">
+                    <i class="fas fa-user-shield fa-2x"></i><br>
+                    <b>CEO</b><br><small>Directeur</small>
+                </div>
+                <div class="member">
+                    <i class="fas fa-headset fa-2x"></i><br>
+                    <b>Support</b><br><small>Assistance</small>
+                </div>
+                <div class="member">
+                    <i class="fas fa-wallet fa-2x"></i><br>
+                    <b>Finance</b><br><small>Paiements</small>
+                </div>
             </div>
+        </div>
+        
+        <div class="card-auto" style="border-left: 5px solid var(--primary);">
+            <i class="fas fa-info-circle"></i> <b>Information :</b><br>
+            <small>Les retraits sont traités automatiquement en moins de 30 minutes vers votre portefeuille BEP20.</small>
         </div>
     </div>
 
-    <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home fa-lg"></i><br>Maison</div>
-        <div class="nav-item" onclick="montrePaj('paj-tach', this)"><i class="fas fa-tasks fa-lg"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users fa-lg"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Sortie</div>
+    <nav id="main-nav" class="nav-bar">
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)">
+            <i class="fas fa-home"></i><br>Accueil
+        </div>
+        <div class="nav-item" onclick="montrePaj('paj-tach', this)">
+            <i class="fas fa-tasks"></i><br>Missions
+        </div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)">
+            <i class="fas fa-users"></i><br>Équipe
+        </div>
+        <div class="nav-item" onclick="location.reload()">
+            <i class="fas fa-sign-out-alt"></i><br>Sortie
+        </div>
     </nav>
 
     <script>
-        function connexion() {
-            const email = document.getElementById('user-email').value;
-            if(email === "") { alert("Entrez votre email"); return; }
-            
-            document.getElementById('display-email').innerText = email;
-            document.getElementById('paj-login').style.display = 'none';
+        // Fonksyon pou jere koneksyon an
+        function validerAuth() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+
+            if(email === "" || pass === "") {
+                alert("Veuillez remplir tous les champs !");
+                return;
+            }
+
+            // Montre dashboard la
+            document.getElementById('user-display').innerText = "ID: " + email;
+            document.getElementById('paj-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
             montrePaj('paj-home');
         }
 
+        // Fonksyon pou chanje paj otomatikman
         function montrePaj(id, el) {
+            // Kache tout paj
             document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
+            // Montre paj ki klike a
             document.getElementById(id).classList.add('aktive');
+            
+            // Chanje koulè nan menu an
             if(el) {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 el.classList.add('active');
@@ -134,4 +180,3 @@
     </script>
 </body>
 </html>
-  
