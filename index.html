@@ -3,180 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starplus | Système VIP Automatique</title>
+    <title>Starplus | Investment System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #c0ff00;
-            --bg: #0f1115;
-            --card: #1c1f26;
-            --text: #ffffff;
-            --blue: #2d65ff;
-            --gold: #ffd700;
-        }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        .paj { display: none; padding: 20px; animation: slideIn 0.3s ease-out; }
+        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
+        .paj { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .paj.aktive { display: block; }
-        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- AUTHENTICATION --- */
-        #paj-auth { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .auth-card { width: 85%; background: var(--card); padding: 30px; border-radius: 25px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #444; background: #000; color: #fff; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--primary); }
+        /* --- UI COMPONENTS --- */
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
+        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 2px solid var(--primary); padding: 25px; border-radius: 25px; text-align: center; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; }
         
-        /* --- DASHBOARD ELEMENTS --- */
-        .balance-card { background: linear-gradient(135deg, var(--primary), #8bc34a); color: #000; padding: 30px; border-radius: 28px; margin-bottom: 20px; text-align: center; position: relative; }
-        .card-auto { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--primary); color: #000; font-size: 16px; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.95); }
-        
-        /* --- TABLES VIP --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #000; border-radius: 15px; overflow: hidden; }
-        th, td { padding: 12px; border: 1px solid #2d2d2d; text-align: center; font-size: 13px; }
-        th { background: var(--primary); color: #000; font-weight: 800; }
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        th, td { padding: 12px; border: 1px solid #2d2d2d; text-align: center; }
+        th { background: var(--primary); color: #000; }
 
-        /* --- TEAM GRID --- */
-        .team-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .member { background: #000; padding: 15px 5px; border-radius: 15px; border: 1px solid #333; text-align: center; }
-        .member i { color: var(--primary); margin-bottom: 8px; }
-
-        /* --- NAVIGATION --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: none; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-item.active { color: var(--primary); transform: translateY(-3px); }
+        /* --- NAV --- */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
+        .nav-item { color: #666; text-align: center; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
     <div id="paj-auth" class="paj aktive">
-        <h1 style="color: var(--primary); font-size: 45px; margin: 0;">STARPLUS</h1>
-        <p style="color: #888; margin-bottom: 30px;">Plateforme d'investissement VIP</p>
-        
-        <div class="auth-card">
-            <h3 id="auth-title">Créer un compte</h3>
-            <input type="email" id="email" placeholder="Adresse Email">
-            <input type="password" id="pass" placeholder="Mot de passe">
-            <button class="btn-main" onclick="validerAuth()">S'inscrire / Connexion</button>
-            <p style="font-size: 11px; color: #555; margin-top: 15px;">En vous connectant, vous acceptez nos termes.</p>
+        <div style="text-align:center; margin-top:50px;">
+            <h1 style="color:var(--primary); font-size:40px;">STARPLUS</h1>
+            <div class="card" style="width:85%; margin:auto;">
+                <h3 id="auth-title">Créer un compte</h3>
+                <input type="email" id="email" placeholder="Email">
+                <input type="password" id="pass" placeholder="Mot de passe">
+                <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                <button class="btn-main" onclick="connexion()">S'inscrire / Connexion</button>
+            </div>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small style="text-transform: uppercase; letter-spacing: 1px;">Solde du Compte</small>
-            <h1 style="font-size: 40px; margin: 10px 0;">500.00 <span style="font-size: 18px;">USDT</span></h1>
-            <div style="background: rgba(0,0,0,0.1); padding: 5px 15px; border-radius: 20px; display: inline-block;">
-                <span id="user-display" style="font-size: 12px; font-weight: bold;"></span>
+            <small>Solde Total (USDT)</small>
+            <h1 style="font-size: 35px; color: var(--primary); margin: 10px 0;">500.00</h1>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff">Dépôt</button>
+                <button class="btn-main" onclick="montrePaj('paj-retrait')" style="background:var(--primary)">Retrait</button>
             </div>
         </div>
 
-        <div class="card-auto">
-            <h3 style="margin:0 0 10px 0; color:var(--primary)"><i class="fas fa-crown"></i> Évaluation des Profits</h3>
+        <h3>Évaluation des Revenus VIP</h3>
+        <div class="card">
             <table>
-                <tr><th>Niveau</th><th>Prix</th><th>Gain/J</th></tr>
-                <tr><td>VIP 1</td><td>20$</td><td>1.40$</td></tr>
-                <tr><td>VIP 2</td><td>60$</td><td>4.80$</td></tr>
-                <tr><td>VIP 3</td><td>150$</td><td>13.50$</td></tr>
-                <tr><td>VIP 4</td><td>400$</td><td>40.00$</td></tr>
+                <tr><th>Niveau</th><th>Prix</th><th>Profit/J</th></tr>
+                <tr><td>VIP 1</td><td>20$</td><td>1.4$ (7%)</td></tr>
+                <tr><td>VIP 2</td><td>60$</td><td>4.8$ (8%)</td></tr>
+                <tr><td>VIP 3</td><td>150$</td><td>13.5$ (9%)</td></tr>
+                <tr><td>VIP 4</td><td>400$</td><td>40$ (10%)</td></tr>
+                <tr><td>VIP 5</td><td>1000$</td><td>120$ (12%)</td></tr>
+                <tr><td>VIP 6</td><td>2500$</td><td>375$ (15%)</td></tr>
+                <tr><td>VIP 7</td><td>6000$</td><td>1200$ (20%)</td></tr>
             </table>
         </div>
     </div>
 
-    <div id="paj-tach" class="paj">
-        <h2 style="color:var(--primary)">Missions VIP</h2>
-        <div class="card-auto">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <b>Vidéo Marketing Facebook</b><br>
-                    <small style="color:var(--primary)">Récompense: 0.80 USDT</small>
-                </div>
-                <button onclick="window.open('https://facebook.com')" style="background:var(--blue); color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:bold;">Ouvrir</button>
-            </div>
-        </div>
+    <div id="paj-vip" class="paj">
+        <h2>Plans d'Investissement</h2>
+        <div id="vip-list"></div>
+    </div>
 
-        <div class="card-auto" style="margin-top: 20px;">
-            <h3 style="margin-top:0;">Soumettre le Rapport</h3>
-            <input type="text" id="task-id" placeholder="Votre ID Starplus">
-            <input type="text" id="task-link" placeholder="Lien du screenshot (preuve)">
-            <button class="btn-main" onclick="alert('Rapport envoyé avec succès ! Un administrateur va valider votre gain.')">Vérifier la Mission</button>
+    <div id="paj-task" class="paj">
+        <h2>Tâche Quotidienne (1/1)</h2>
+        <div class="card">
+            <p>Cliquez sur le bouton pour générer votre profit quotidien.</p>
+            <button class="btn-main" id="btn-task" onclick="faireTask()">Exécuter la tâche</button>
+            <p id="task-msg" style="color:var(--primary); margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <div id="paj-depot" class="paj">
+        <h2>Déposer USDT (BEP20)</h2>
+        <div class="card" style="text-align:center;">
+            <p style="color:#aaa;">Minimum: 20 USDT</p>
+            <div style="background:#000; padding:15px; border-radius:10px; border:1px dashed var(--primary); word-break:break-all; font-family:monospace;">
+                0x93ba288d4fe6c64234a44f3234cbf6949e76246e
+            </div>
+            <br>
+            <button class="btn-main" onclick="copyAdr()">Copier l'adresse</button>
+            <input type="number" placeholder="Montant envoyé">
+            <button class="btn-main" style="background:#fff; margin-top:10px;" onclick="alert('Paiement en cours de vérification...')">Soumettre</button>
+        </div>
+    </div>
+
+    <div id="paj-retrait" class="paj">
+        <h2>Retrait de Fonds</h2>
+        <div class="card">
+            <p style="color:#aaa;">Minimum: 2 USDT</p>
+            <input type="number" placeholder="Montant à retirer">
+            <input type="text" placeholder="Adresse USDT BEP20">
+            <button class="btn-main" style="background:var(--red); color:white;" onclick="alert('Retrait soumis! Attente 30min.')">Confirmer Retrait</button>
+        </div>
+        <h3>Transfert Interne</h3>
+        <div class="card">
+            <input type="email" placeholder="Email du destinataire">
+            <input type="number" placeholder="Montant">
+            <button class="btn-main" style="background:var(--blue); color:white;">Transférer</button>
         </div>
     </div>
 
     <div id="paj-ekip" class="paj">
-        <h2 style="color:var(--primary)">Notre Équipe</h2>
-        <div class="card-auto" style="text-align: center;">
-            <p style="color:#aaa; font-size: 14px;">Starplus est soutenu par une équipe d'experts financiers disponible 24h/24.</p>
-            <div class="team-grid">
-                <div class="member">
-                    <i class="fas fa-user-shield fa-2x"></i><br>
-                    <b>CEO</b><br><small>Directeur</small>
-                </div>
-                <div class="member">
-                    <i class="fas fa-headset fa-2x"></i><br>
-                    <b>Support</b><br><small>Assistance</small>
-                </div>
-                <div class="member">
-                    <i class="fas fa-wallet fa-2x"></i><br>
-                    <b>Finance</b><br><small>Paiements</small>
-                </div>
-            </div>
+        <h2>Mon Équipe</h2>
+        <div class="card" style="background:var(--primary); color:#000;">
+            <small>Lien d'invitation:</small><br>
+            <b id="ref-link">https://starplus.com/reg?ref=...</b>
         </div>
-        
-        <div class="card-auto" style="border-left: 5px solid var(--primary);">
-            <i class="fas fa-info-circle"></i> <b>Information :</b><br>
-            <small>Les retraits sont traités automatiquement en moins de 30 minutes vers votre portefeuille BEP20.</small>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <div class="card" style="text-align:center;">Lvl 1<br><b>10%</b></div>
+            <div class="card" style="text-align:center;">Lvl 2<br><b>5%</b></div>
+            <div class="card" style="text-align:center;">Lvl 3<br><b>2%</b></div>
         </div>
     </div>
 
-    <nav id="main-nav" class="nav-bar">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)">
-            <i class="fas fa-home"></i><br>Accueil
-        </div>
-        <div class="nav-item" onclick="montrePaj('paj-tach', this)">
-            <i class="fas fa-tasks"></i><br>Missions
-        </div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)">
-            <i class="fas fa-users"></i><br>Équipe
-        </div>
-        <div class="nav-item" onclick="location.reload()">
-            <i class="fas fa-sign-out-alt"></i><br>Sortie
-        </div>
+    <nav id="main-nav" class="nav-bar" style="display:none;">
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home fa-lg"></i><br>Maison</div>
+        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown fa-lg"></i><br>VIP</div>
+        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-list-check fa-lg"></i><br>Tâches</div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users fa-lg"></i><br>Équipe</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt fa-lg"></i><br>Sortie</div>
     </nav>
 
     <script>
-        // Fonksyon pou jere koneksyon an
-        function validerAuth() {
+        const vips = [
+            {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
+            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
+        ];
+
+        function connexion() {
             const email = document.getElementById('email').value;
-            const pass = document.getElementById('pass').value;
-
-            if(email === "" || pass === "") {
-                alert("Veuillez remplir tous les champs !");
-                return;
-            }
-
-            // Montre dashboard la
-            document.getElementById('user-display').innerText = "ID: " + email;
+            if(!email) return alert("Entrez un email");
             document.getElementById('paj-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('ref-link').innerText = "https://starplus.com/reg?ref=" + email.split('@')[0];
             montrePaj('paj-home');
         }
 
-        // Fonksyon pou chanje paj otomatikman
         function montrePaj(id, el) {
-            // Kache tout paj
             document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
-            // Montre paj ki klike a
             document.getElementById(id).classList.add('aktive');
-            
-            // Chanje koulè nan menu an
             if(el) {
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 el.classList.add('active');
             }
         }
+
+        function faireTask() {
+            const btn = document.getElementById('btn-task');
+            btn.disabled = true;
+            btn.innerText = "Traitement...";
+            setTimeout(() => {
+                document.getElementById('task-msg').innerText = "✅ Tâche terminée! +1.40 USDT ajoutés.";
+                btn.innerText = "Terminé pour aujourd'hui";
+            }, 2000);
+        }
+
+        function copyAdr() {
+            navigator.clipboard.writeText("0x93ba288d4fe6c64234a44f3234cbf6949e76246e");
+            alert("Adresse BEP20 Copiée!");
+        }
+
+        // Jenere lis VIP
+        const container = document.getElementById('vip-list');
+        vips.forEach(v => {
+            container.innerHTML += `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>VIP ${v.n}</b><br><small>Prix: ${v.p} USDT</small></div>
+                    <div style="color:var(--primary)">${v.r}$/jour</div>
+                    <button onclick="montrePaj('paj-depot')" style="padding:5px 10px; border-radius:8px; border:none; background:var(--primary); font-weight:bold;">Activer</button>
+                </div>
+            `;
+        });
     </script>
 </body>
 </html>
