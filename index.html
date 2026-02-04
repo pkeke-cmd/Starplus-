@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -15,20 +15,16 @@
         /* --- UI ELEMENTS --- */
         .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; position: relative; overflow: hidden; }
-        .balance-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(192,255,0,0.05) 0%, transparent 70%); }
         
-        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid #333; background: rgba(0,0,0,0.5); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
-        
-        .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        /* Input Group with Icon */
+        .input-group { position: relative; width: 100%; margin: 10px 0; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: rgba(0,0,0,0.5); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(192, 255, 0, 0.2); }
+        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); cursor: pointer; z-index: 10; padding: 10px; }
+
+        .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 10px; }
         .btn-main:active { transform: scale(0.98); }
         .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
-
-        /* --- TRANSACTIONS --- */
-        .tranzaksyon { font-size: 13px; padding: 10px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .status { padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
-        .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
-        .status.wait { background: rgba(255,165,0,0.1); color: orange; }
 
         /* --- NAV BAR --- */
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(22,26,30,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
@@ -36,28 +32,49 @@
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
 
-        .share-btn { padding: 12px; border-radius: 10px; color: white; text-decoration: none; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
-        .wa { background: #25d366; } .fb { background: #1877f2; }
+        /* --- ADMIN & LISTS --- */
+        .status { padding: 4px 8px; border-radius: 5px; font-size: 10px; font-weight: bold; }
+        .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
+        .tranzaksyon { font-size: 13px; padding: 10px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
     <div id="paj-auth" class="paj aktive">
         <div style="text-align:center; margin-top:50px;">
-            <h1 style="color:var(--primary); font-size:45px; margin-bottom:10px;">STARPLUS</h1>
-            <p style="color:var(--gray); margin-bottom:30px;">L'investissement intelligent commence ici.</p>
+            <h1 style="color:var(--primary); font-size:45px; margin-bottom:5px;">STARPLUS</h1>
+            <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">Rejoignez l'élite de l'investissement.</p>
+            
             <div class="card" style="width:90%; margin:auto;">
-                <h3 id="auth-title">Créer un compte</h3>
+                <h3 id="auth-title" style="margin-bottom: 20px;">Créer un compte</h3>
+                
                 <div id="signup-fields">
-                    <input type="text" id="username" placeholder="Nom d'utilisateur">
+                    <div class="input-group">
+                        <input type="text" id="username" placeholder="Nom d'utilisateur">
+                    </div>
                 </div>
-                <input type="email" id="email" placeholder="Adresse Email">
-                <input type="password" id="pass" placeholder="Mot de passe">
+
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Adresse Email">
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="pass" placeholder="Mot de passe">
+                    <i class="fas fa-eye" onclick="togglePass('pass', this)"></i>
+                </div>
+
                 <div id="confirm-pass-field">
-                    <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
-                    <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                    <div class="input-group">
+                        <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
+                        <i class="fas fa-eye" onclick="togglePass('pass-confirm', this)"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                    </div>
                 </div>
+
                 <button class="btn-main" id="btn-auth" onclick="handleAuth()">Commencer</button>
+                
                 <p id="toggle-auth" onclick="toggleAuthMode()" style="color:var(--primary); margin-top:20px; font-size:14px; cursor:pointer; font-weight:600;">
                     Déjà inscrit ? Connectez-vous
                 </p>
@@ -67,302 +84,70 @@
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px;">Solde Disponible</small>
-            <h1 style="font-size: 40px; margin: 15px 0;"><span id="user-balance">0.00</span> <span style="font-size:18px; color:var(--primary);">USDT</span></h1>
-            <div style="display:flex; gap:12px; margin-top:20px;">
+            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px;">Solde Actuel</small>
+            <h1 style="font-size: 40px; margin: 10px 0;"><span id="user-balance">0.00</span> <span style="font-size:16px; color:var(--primary);">USDT</span></h1>
+            <div style="display:flex; gap:12px; margin-top:15px;">
                 <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff;">Dépôt</button>
                 <button class="btn-main" onclick="montrePaj('paj-retrait')">Retrait</button>
             </div>
         </div>
 
         <div id="admin-shortcut" style="display:none; margin-top: 15px;">
-            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMINISTRATION</button>
+            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button>
         </div>
 
-        <h3 style="margin-top:25px;">Statut du Compte</h3>
-        <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
-            <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small style="color:var(--gray);">Username</small><br><b id="display-user">...</b></div>
-            <div><small style="color:var(--gray);">Profit/J</small><br><b id="daily-profit">0.00</b></div>
+        <h3 style="margin-top:25px;">Mon Statut</h3>
+        <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 15px;">
+            <div><small style="color:var(--gray);">Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">Membre</small><br><b id="display-user">...</b></div>
+            <div><small style="color:var(--gray);">Gain/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
 
-        <h3>Historique Récent</h3>
+        <h3>Activités</h3>
         <div class="card" id="history-list">
-            <p style="color:var(--gray); text-align:center; font-size:12px;">Aucune activité récente.</p>
+            <div class="tranzaksyon"><span>Bienvenue sur Starplus</span><span class="status ok">INFO</span></div>
         </div>
     </div>
 
     <div id="paj-vip" class="paj">
-        <h2 style="text-align:center; color:var(--primary);">Plans d'Investissement</h2>
+        <h2 style="text-align:center; color:var(--primary);">Packs VIP</h2>
         <div id="vip-list"></div>
     </div>
 
     <div id="paj-task" class="paj">
-        <h2 style="text-align:center;">Tâches Quotidiennes</h2>
+        <h2 style="text-align:center;">Tâche du Jour</h2>
         <div class="card" style="text-align:center; padding:40px 20px;">
-            <div id="task-icon-container" style="margin-bottom:20px;">
-                <i class="fas fa-gem fa-4x" style="color:var(--primary);"></i>
-            </div>
-            <p id="task-info" style="color:var(--gray); margin-bottom:20px;">Activez un pack VIP pour commencer à générer des profits.</p>
-            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>Récupérer Commission</button>
+            <div style="margin-bottom:20px;"><i class="fas fa-coins fa-4x" style="color:var(--primary);"></i></div>
+            <p id="task-info" style="color:var(--gray); margin-bottom:20px;">Aucune tâche disponible.</p>
+            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>Récupérer mon profit</button>
             <p id="task-msg" style="margin-top:20px; font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="paj-depot" class="paj">
-        <h2>Recharger mon compte</h2>
+        <h2>Recharge USDT (BEP20)</h2>
         <div class="card" style="text-align:center;">
-            <p style="color:var(--gray); font-size:14px;">Envoyez USDT (BEP20) à l'adresse ci-dessous</p>
-            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:10px solid #fff; border-radius:15px; margin:15px 0;">
-            <div style="background:#000; padding:15px; border-radius:12px; font-family:monospace; font-size:12px; border:1px dashed #444; word-break:break-all; margin-bottom:15px;">
+            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:10px solid #fff; border-radius:15px; margin-bottom:15px;">
+            <div style="background:#000; padding:15px; border-radius:12px; font-family:monospace; font-size:11px; border:1px dashed #444; word-break:break-all; margin-bottom:15px; color: var(--primary);">
                 0x93ba288d4fe6c64234a44f3234cbf6949e76246e
             </div>
             <button class="btn-main" onclick="copyAdr()" style="font-size:12px; padding:10px; width:auto; margin-bottom:20px;">Copier l'adresse</button>
-            <hr style="border:0; border-top:1px solid #333; margin-bottom:20px;">
-            <input type="number" id="montant-depot" placeholder="Montant transféré (USDT)">
-            <button class="btn-main" id="btn-soumettre-depot" style="background:#fff;" onclick="voyePeman()">Confirmer le dépôt</button>
+            <input type="number" id="montant-depot" placeholder="Montant envoyé (USDT)">
+            <button class="btn-main" style="background:#fff;" onclick="voyePeman()">Soumettre le dépôt</button>
         </div>
     </div>
 
     <div id="paj-retrait" class="paj">
-        <h2>Retrait de fonds</h2>
+        <h2>Faire un retrait</h2>
         <div class="card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <span>Disponible:</span>
-                <b style="color:var(--primary);"><span id="retrait-bal">0.00</span> USDT</b>
-            </div>
             <input type="number" id="ret-montant" placeholder="Montant (Min 1 USDT)">
-            <input type="text" id="ret-adr" placeholder="Votre adresse USDT BEP20">
-            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">Lancer le retrait</button>
+            <input type="text" id="ret-adr" placeholder="Adresse USDT BEP20">
+            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">Confirmer Retrait</button>
         </div>
     </div>
 
-    <div id="paj-ekip" class="paj">
-        <h2>Programme de Parrainage</h2>
-        <div class="card" style="text-align:center;">
-            <p style="color:var(--gray);">Gagnez jusqu'à 15% de commission sur vos amis.</p>
-            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin:15px 0; border:1px solid #333;">...</div>
-            <button class="btn-main" onclick="copyLink()">Copier mon lien</button>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <a href="#" id="share-wa" class="share-btn wa"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" id="share-fb" class="share-btn fb"><i class="fab fa-facebook-f"></i></a>
-            </div>
-        </div>
-    </div>
+    <div id="
 
-    <div id="paj-admin" class="paj">
-        <h2 style="color:orange;">Administration</h2>
-        <div id="admin-list">Chargement des requêtes...</div>
-        <button class="btn-main" onclick="montrePaj('paj-home')" style="margin-top:20px; background:#444; color:#fff;">Retour Accueil</button>
-    </div>
+   
 
-    <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
-        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-hand-holding-usd"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Quitter</div>
-    </nav>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // CONFIGURATION - METE KÒD PA W YO LA
-        const firebaseConfig = {
-            apiKey: "API_KEY_PA_W",
-            authDomain: "starplus-47411.firebaseapp.com",
-            databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
-            projectId: "starplus-47411",
-            storageBucket: "starplus-47411.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        let currentUser = null;
-        let isLogin = false;
-
-        const vips = [
-            {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
-            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
-        ];
-
-        // GESTION AUTH
-        window.toggleAuthMode = () => {
-            isLogin = !isLogin;
-            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
-            document.getElementById('signup-fields').style.display = isLogin ? "none" : "block";
-            document.getElementById('confirm-pass-field').style.display = isLogin ? "none" : "block";
-            document.getElementById('btn-auth').innerText = isLogin ? "Se Connecter" : "S'inscrire";
-            document.getElementById('toggle-auth').innerText = isLogin ? "Pas encore de compte ? S'inscrire" : "Déjà inscrit ? Se connecter";
-        };
-
-        window.handleAuth = async () => {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('pass').value.trim();
-            const user = document.getElementById('username').value.trim();
-            const confirm = document.getElementById('pass-confirm').value.trim();
-            const refCode = document.getElementById('ref-code').value.trim();
-
-            if(!email || !pass) return alert("Veuillez remplir tous les champs.");
-            const id = email.replace(/\./g, '_');
-            const uRef = ref(db, 'users/' + id);
-
-            if(!isLogin) {
-                if(pass !== confirm) return alert("Les mots de passe ne correspondent pas.");
-                const check = await get(uRef);
-                if(check.exists()) return alert("Cet email est déjà utilisé.");
-                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, refBy: refCode || "aucun", lastTask: "" });
-            } else {
-                const snap = await get(uRef);
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants invalides.");
-            }
-            currentUser = id;
-            initApp(email);
-        };
-
-        function initApp(email) {
-            document.getElementById('paj-auth').style.display = 'none';
-            document.getElementById('main-nav').style.display = 'flex';
-            
-            // Referans
-            const link = window.location.origin + window.location.pathname + "?ref=" + email.split('@')[0];
-            document.getElementById('ref-link').innerText = link;
-            document.getElementById('share-wa').href = `https://wa.me/?text=Gagnez de l'argent avec moi sur Starplus: ${link}`;
-            document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${link}`;
-
-            if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = 'block';
-
-            // Live Update
-            onValue(ref(db, 'users/' + currentUser), (snap) => {
-                const d = snap.val();
-                document.getElementById('user-balance').innerText = d.balance.toFixed(2);
-                document.getElementById('retrait-bal').innerText = d.balance.toFixed(2);
-                document.getElementById('display-user').innerText = d.username;
-                document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
-                
-                const prof = vips.find(v => v.n == d.vip).r;
-                document.getElementById('daily-profit').innerText = prof.toFixed(2);
-                
-                const btn = document.getElementById('btn-task');
-                btn.disabled = (d.vip === 0);
-                document.getElementById('task-info').innerText = d.vip > 0 ? `Votre profit VIP ${d.vip} est prêt.` : "Activez un VIP pour commencer.";
-            });
-
-            // Chaje History
-            loadHistory();
-            montrePaj('paj-home');
-        }
-
-        // TRANSAKSYON
-        window.voyePeman = async () => {
-            const m = document.getElementById('montant-depot').value;
-            if(m < 20) return alert("Minimum 20 USDT.");
-            const newDepot = push(ref(db, 'depots_pendants'));
-            await set(newDepot, { userId: currentUser, montant: parseFloat(m), dat: new Date().toLocaleString(), status: "wait" });
-            alert("Requête de dépôt envoyée !");
-            document.getElementById('montant-depot').value = "";
-            montrePaj('paj-home');
-        };
-
-        window.voyeRetrait = async () => {
-            const m = document.getElementById('ret-montant').value;
-            const adr = document.getElementById('ret-adr').value;
-            if(m < 1) return alert("Minimum 1 USDT.");
-            
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            if(snap.val().balance < m) return alert("Solde insuffisant.");
-
-            await update(uRef, { balance: snap.val().balance - parseFloat(m) });
-            await push(ref(db, 'retraits_pendants'), { userId: currentUser, montant: parseFloat(m), adresse: adr, dat: new Date().toLocaleString() });
-            alert("Demande de retrait en cours.");
-            montrePaj('paj-home');
-        };
-
-        window.faireTask = async () => {
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            const d = snap.val();
-            const today = new Date().toDateString();
-
-            if(d.lastTask === today) return alert("Tâche déjà effectuée aujourd'hui !");
-
-            const profit = vips.find(v => v.n == d.vip).r;
-            await update(uRef, { balance: d.balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = `✅ +${profit} USDT ajouté !`;
-            setTimeout(() => document.getElementById('task-msg').innerText = "", 3000);
-        };
-
-        // ADMIN LOGIC (AUTOMATIQUE VIP)
-        window.chajeAdmin = () => {
-            onValue(ref(db, 'depots_pendants'), (snap) => {
-                const cont = document.getElementById('admin-list');
-                cont.innerHTML = "";
-                if(!snap.exists()) return cont.innerHTML = "Aucun dépôt en attente.";
-                snap.forEach((child) => {
-                    const d = child.val();
-                    cont.innerHTML += `
-                        <div class="card">
-                            <p>Utilisateur: <b>${d.userId}</b></p>
-                            <p>Montant: <b>${d.montant} USDT</b></p>
-                            <button class="btn-main" onclick="valideDepot('${child.key}', '${d.userId}', ${d.montant})">Approuver & VIP Auto</button>
-                        </div>`;
-                });
-            });
-        };
-
-        window.valideDepot = async (key, uid, m) => {
-            const uRef = ref(db, 'users/' + uid);
-            const uSnap = await get(uRef);
-            const d = uSnap.val();
-            const nouvoBal = d.balance + m;
-
-            // VIP AUTOMATIQUE
-            let nouvoVIP = d.vip;
-            const reversedVips = [...vips].sort((a,b) => b.p - a.p);
-            for(let v of reversedVips) {
-                if(nouvoBal >= v.p) { nouvoVIP = v.n; break; }
-            }
-
-            await update(uRef, { balance: nouvoBal, vip: nouvoVIP });
-            await remove(ref(db, 'depots_pendants/' + key));
-            alert("Validé avec succès !");
-        };
-
-        // UI HELPERS
-        window.montrePaj = (id, el) => {
-            document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
-            document.getElementById(id).classList.add('aktive');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-        };
-
-        window.copyAdr = () => { navigator.clipboard.writeText("0x93ba288d4fe6c64234a44f3234cbf6949e76246e"); alert("Adresse copiée !"); };
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
-
-        function loadHistory() {
-            // Simulation ou onValue depann de bezwen ou
-            const list = document.getElementById('history-list');
-            list.innerHTML = `<div class="tranzaksyon"><span>Bienvenue sur Starplus</span><span class="status ok">INFO</span></div>`;
-        }
-
-        // VIP LIST GENERATOR
-        const vipCont = document.getElementById('vip-list');
-        vips.slice(1).forEach(v => {
-            vipCont.innerHTML += `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><b style="font-size:18px;">VIP ${v.n}</b><br><small style="color:var(--gray);">Prix: ${v.p} USDT</small></div>
-                    <div style="text-align:right;">
-                        <b style="color:var(--primary);">${v.r} USDT/J</b><br>
-                        <button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px 10px; border-radius:5px; font-weight:bold; margin-top:5px; cursor:pointer;">Activer</button>
-                    </div>
-                </div>`;
-        });
-    </script>
-</body>
-</html>
+  
