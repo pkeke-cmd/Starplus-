@@ -7,7 +7,7 @@
     <title>Starplus | Investment System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; }
+        :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; --blue: #3498db; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
         .paj { display: none; padding: 20px; animation: fadeIn 0.3s; }
         .paj.aktive { display: block; }
@@ -106,19 +106,13 @@
             <input type="text" placeholder="Adresse USDT BEP20">
             <button class="btn-main" style="background:var(--red); color:white;" onclick="alert('Retrait soumis! Attente 30min.')">Confirmer Retrait</button>
         </div>
-        <h3>Transfert Interne</h3>
-        <div class="card">
-            <input type="email" placeholder="Email du destinataire">
-            <input type="number" placeholder="Montant">
-            <button class="btn-main" style="background:var(--blue); color:white;">Transférer</button>
-        </div>
     </div>
 
     <div id="paj-ekip" class="paj">
         <h2>Mon Équipe</h2>
-        <div class="card" style="background:var(--primary); color:#000;">
-            <small>Lien d'invitation:</small><br>
-            <b id="ref-link">https://starplus.com/reg?ref=...</b>
+        <div class="card" style="background:var(--primary); color:#000; cursor:pointer;" onclick="copyLink()">
+            <small>Cliquez pour copier votre lien :</small><br>
+            <b id="ref-link">Chargement...</b>
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
             <div class="card" style="text-align:center;">Lvl 1<br><b>10%</b></div>
@@ -136,6 +130,16 @@
     </nav>
 
     <script>
+        // 1. Detekte referans nan URL la depi paj la louvri
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const kòd = urlParams.get('ref');
+            if (kòd) {
+                document.getElementById('ref-code').value = kòd;
+                document.getElementById('ref-code').style.border = "2px solid var(--primary)";
+            }
+        };
+
         const vips = [
             {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
             {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
@@ -144,9 +148,17 @@
         function connexion() {
             const email = document.getElementById('email').value;
             if(!email) return alert("Entrez un email");
+
+            // Kache login, montre rès la
             document.getElementById('paj-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
-            document.getElementById('ref-link').innerText = "https://starplus.com/reg?ref=" + email.split('@')[0];
+            
+            // Kreye lyen referans lan ak non itilizatè a
+            const nomItilizate = email.split('@')[0];
+            const baseUrl = window.location.href.split('?')[0];
+            const monLien = baseUrl + "?ref=" + nomItilizate;
+            document.getElementById('ref-link').innerText = monLien;
+
             montrePaj('paj-home');
         }
 
@@ -174,7 +186,13 @@
             alert("Adresse BEP20 Copiée!");
         }
 
-        // Jenere lis VIP
+        function copyLink() {
+            const link = document.getElementById('ref-link').innerText;
+            navigator.clipboard.writeText(link);
+            alert("Lien de parrainage copié !");
+        }
+
+        // Jenere lis VIP yo
         const container = document.getElementById('vip-list');
         vips.forEach(v => {
             container.innerHTML += `
