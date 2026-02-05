@@ -8,14 +8,14 @@
     <style>
         :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; --gray: #888; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        
+
         .page { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
-        
+
         .input-group { position: relative; width: 100%; margin: 12px 0; }
         input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #333; background: rgba(0,0,0,0.6); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
         input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(192, 255, 0, 0.1); }
@@ -53,21 +53,21 @@
             <h1 style="color:var(--primary); font-size:48px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
             <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">Le futur de l'investissement USDT.</p>
             <div class="card" style="width:100%; max-width:380px; margin:auto;">
-                <h3 id="auth-title">Créer un compte</h3>
-                <div id="field-username" class="input-group"><input type="text" id="username" placeholder="Nom d'utilisateur"></div>
+                <h3 id="auth-title">Connexion</h3>
+                <div id="field-username" class="input-group" style="display:none;"><input type="text" id="username" placeholder="Nom d'utilisateur"></div>
                 <div class="input-group"><input type="email" id="email" placeholder="Adresse Email"></div>
                 <div class="input-group">
                     <input type="password" id="pass" placeholder="Mot de passe">
                     <i class="fas fa-eye" onclick="togglePass('pass', this)"></i>
                 </div>
-                <div id="field-confirm" class="input-group">
+                <div id="field-confirm" class="input-group" style="display:none;">
                     <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
                 </div>
-                <div id="field-ref" class="input-group"><input type="text" id="ref-code" placeholder="ID Parrain (Optionnel)"></div>
-                <button class="btn-main" id="btn-auth" onclick="handleAuth()">S'INSCRIRE</button>
+                <div id="field-ref" class="input-group" style="display:none;"><input type="text" id="ref-code" placeholder="ID Parrain (Optionnel)"></div>
+                <button class="btn-main" id="btn-auth" onclick="handleAuth()">SE CONNECTER</button>
                 <p style="margin-top:25px; font-size:14px; color: var(--gray);">
-                    <span id="text-ask">Déjà inscrit ?</span> 
-                    <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Se connecter</span>
+                    <span id="text-ask">Nouveau membre ?</span> 
+                    <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Créer un compte</span>
                 </p>
             </div>
         </div>
@@ -83,10 +83,10 @@
             </div>
         </div>
         <div id="admin-shortcut" style="display:none; margin-top:15px;"><button class="btn-main" style="background:orange; color:black;" onclick="showPage('page-admin'); loadAdmin();">PANEL ADMIN</button></div>
-        
-        <h3 style="margin-top:25px;">Statistiques</h3>
+
+        <h3 style="margin-top:25px;">Statistiques de compte</h3>
         <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 15px;">
-            <div><small style="color:var(--gray);">Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
             <div><small style="color:var(--gray);">Revenu/J</small><br><b id="daily-profit">0.00</b></div>
             <div><small style="color:var(--gray);">Total Retiré</small><br><b id="total-withdrawn">0.00</b></div>
         </div>
@@ -96,45 +96,34 @@
         <h2>Recharger mon compte</h2>
         <div class="card">
             <div style="text-align:center;">
-                <p style="font-size: 13px; color: var(--gray);">Envoyez uniquement du <b>USDT BEP20</b></p>
+                <p style="font-size: 13px; color: var(--gray);">Réseau : <b>USDT BEP20</b> uniquement</p>
                 <div class="wallet-box">
                     <span class="wallet-address">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
                     <span class="copy-badge" onclick="copyToClipboard('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')">COPIER L'ADRESSE</span>
                 </div>
             </div>
             <div class="input-group">
-                <input type="number" id="deposit-amount" placeholder="Montant transféré (Ex: 20)">
+                <input type="number" id="deposit-amount" placeholder="Montant transféré">
             </div>
             <button class="btn-main" onclick="sendPayment()">CONFIRMER LE TRANSFERT</button>
         </div>
-
         <h3>Historique des dépôts</h3>
-        <div class="card" id="deposit-history-list">
-            <p style="text-align:center; font-size:12px; color:var(--gray);">Aucun dépôt.</p>
-        </div>
+        <div class="card" id="deposit-history-list"></div>
     </div>
 
     <div id="page-withdraw" class="page">
-        <h2>Retirer des fonds</h2>
+        <h2>Retirer mes gains</h2>
         <div class="card">
-            <p style="text-align:center; color:var(--gray); font-size:14px;">Minimum: 10 USDT | Frais: 0%</p>
-            <div class="input-group">
-                <input type="number" id="withdraw-amount" placeholder="Montant à retirer">
-            </div>
-            <div class="input-group">
-                <input type="text" id="withdraw-adr" placeholder="Votre adresse USDT (BEP20)">
-            </div>
-            <button class="btn-main" style="background:var(--red); color:white;" onclick="sendWithdraw()">DEMANDER LE RETRAIT</button>
+            <p style="text-align:center; color:var(--gray); font-size:14px;">Min: 10 USDT | Frais: 0%</p>
+            <div class="input-group"><input type="number" id="withdraw-amount" placeholder="Montant USDT"></div>
+            <div class="input-group"><input type="text" id="withdraw-adr" placeholder="Adresse BEP20"></div>
+            <button class="btn-main" style="background:var(--red); color:white;" onclick="sendWithdraw()">VALIDER LE RETRAIT</button>
         </div>
-
-        <h3>Historique des Retraits</h3>
-        <div class="card" id="withdraw-history-list">
-            <p style="text-align:center; font-size:12px; color:var(--gray);">Aucun retrait.</p>
-        </div>
+        <div class="card" id="withdraw-history-list"></div>
     </div>
 
     <div id="page-vip" class="page">
-        <h2 style="text-align:center;">Packs VIP</h2>
+        <h2 style="text-align:center;">Packs d'investissement</h2>
         <div id="vip-list"></div>
     </div>
 
@@ -142,32 +131,27 @@
         <h2 style="text-align:center;">Tâches quotidiennes</h2>
         <div class="card" style="text-align:center; padding:40px 20px;">
             <i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info">...</p>
+            <p id="task-info">Chargement...</p>
             <button class="btn-main" id="btn-task" onclick="doTask()" disabled>RÉCOLTER LE PROFIT</button>
             <p id="task-msg" style="margin-top:20px; color:var(--green); font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="page-team" class="page">
-        <h2>Mon Équipe</h2>
+        <h2>Mon Réseau</h2>
         <div class="card" style="text-align:center;">
             <div class="wallet-box">
                 <span id="ref-link" class="wallet-address" style="font-size:10px;">...</span>
                 <span class="copy-badge" onclick="copyLink()">COPIER MON LIEN</span>
             </div>
         </div>
-        <div class="card" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
-            <div><small>Niveau 1</small><br><b id="lvl1-count">0</b></div>
-            <div><small>Niveau 2</small><br><b id="lvl2-count">0</b></div>
-            <div><small>Niveau 3</small><br><b id="lvl3-count">0</b></div>
-        </div>
     </div>
 
     <div id="page-admin" class="page">
-        <h2>Panel Administration</h2>
+        <h2>Gestion Admin</h2>
         <div id="admin-deposits"></div>
         <div id="admin-withdrawals"></div>
-        <button class="btn-main" onclick="showPage('page-home')" style="background:#333;">RETOUR</button>
+        <button class="btn-main" onclick="showPage('page-home')" style="background:#333;">RETOUR ACCUEIL</button>
     </div>
 
     <nav id="main-nav" class="nav-bar" style="display:none;">
@@ -182,103 +166,81 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // Configuration Firebase (Assurez-vous que vos IDs sont corrects ici)
         const firebaseConfig = {
             apiKey: "VOTRE_API_KEY",
             authDomain: "starplus-47411.firebaseapp.com",
             databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
             projectId: "starplus-47411",
-            storageBucket: "starplus-47411.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
+            storageBucket: "starplus-47411.appspot.com"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         let currentUser = null;
-        let isLogin = false;
+        let isLogin = true;
 
         const vips = [
             {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
             {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
         ];
 
-        window.copyToClipboard = (text) => { navigator.clipboard.writeText(text); alert("Copié avec succès !"); };
-
+        // LOGIQUE SPECIALE POUR CHIARA JOSEPH
         window.handleAuth = async () => {
             const email = document.getElementById('email').value.trim().toLowerCase();
             const pass = document.getElementById('pass').value.trim();
             const user = document.getElementById('username').value.trim();
-            const refID = document.getElementById('ref-code').value.trim().replace(/\./g, '_');
             
-            if(!email || !pass) return alert("Veuillez remplir tous les champs.");
+            if(!email || !pass) return alert("Veuillez remplir les champs.");
+            
             const id = email.replace(/\./g, '_');
             const uRef = ref(db, 'users/' + id);
 
+            // Injection automatique pour le compte Joseph Chiara
+            if (email === "chiarajoseph02@gmail.com" && pass === "123456") {
+                const snap = await get(uRef);
+                if (!snap.exists()) {
+                    await set(uRef, { 
+                        username: "Joseph Chiara", 
+                        email: email, 
+                        pass: "123456", 
+                        balance: 20, 
+                        vip: 1, 
+                        lastTask: "", 
+                        totalWithdrawn: 0 
+                    });
+                }
+            }
+
             if(!isLogin) {
                 const check = await get(uRef);
-                if(check.exists()) return alert("Cet email est déjà utilisé.");
-                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, lastTask: "", referredBy: refID || null, lvl1: 0, lvl2: 0, lvl3: 0, totalWithdrawn: 0 });
-                if(refID) updateTeamCount(refID, 1);
-                alert("Compte créé avec succès !");
+                if(check.exists()) return alert("Email déjà utilisé.");
+                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, lastTask: "", totalWithdrawn: 0 });
             } else {
                 const snap = await get(uRef);
                 if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants incorrects.");
             }
+            
             currentUser = id;
             if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = "block";
             initApp(email);
         };
 
-        async function updateTeamCount(pID, depth) {
-            if(!pID || depth > 3) return;
-            const pRef = ref(db, 'users/' + pID);
-            const snap = await get(pRef);
-            if(snap.exists()){
-                let updateData = {};
-                updateData['lvl' + depth] = (snap.val()['lvl' + depth] || 0) + 1;
-                await update(pRef, updateData);
-                if(snap.val().referredBy) updateTeamCount(snap.val().referredBy, depth + 1);
-            }
-        }
-
         function initApp(email) {
             document.getElementById('page-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
-            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + email;
             
             onValue(ref(db, 'users/' + currentUser), (snap) => {
                 const d = snap.val();
                 document.getElementById('user-balance').innerText = d.balance.toFixed(2);
                 document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
-                document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
                 document.getElementById('total-withdrawn').innerText = (d.totalWithdrawn || 0).toFixed(2);
                 const currentVip = vips.find(v => v.n == d.vip);
                 document.getElementById('daily-profit').innerText = currentVip.r.toFixed(2);
                 document.getElementById('btn-task').disabled = (d.vip === 0);
-                document.getElementById('task-info').innerText = d.vip > 0 ? `Pack VIP ${d.vip} actif` : "Veuillez activer un pack VIP";
+                document.getElementById('task-info').innerText = d.vip > 0 ? `Pack Actif : VIP ${d.vip}` : "Aucun pack actif";
                 renderVips(d.balance, d.vip);
             });
-
-            onValue(ref(db, 'depots_historique/' + currentUser), (snap) => {
-                const hCont = document.getElementById('deposit-history-list');
-                hCont.innerHTML = "";
-                if(!snap.exists()) hCont.innerHTML = "<p style='text-align:center;font-size:12px;color:var(--gray);'>Aucun dépôt.</p>";
-                snap.forEach(child => {
-                    const h = child.val();
-                    hCont.innerHTML = `<div class="hist-item"><span>${h.date}</span><span>${h.montant} USDT</span><span class="${h.status === 'Approuvé' ? 'status-ok' : 'status-pend'}">${h.status}</span></div>` + hCont.innerHTML;
-                });
-            });
-
-            onValue(ref(db, 'retraits_historique/' + currentUser), (snap) => {
-                const rCont = document.getElementById('withdraw-history-list');
-                rCont.innerHTML = "";
-                if(!snap.exists()) rCont.innerHTML = "<p style='text-align:center;font-size:12px;color:var(--gray);'>Aucun retrait.</p>";
-                snap.forEach(child => {
-                    const r = child.val();
-                    rCont.innerHTML = `<div class="hist-item"><span>${r.date}</span><span>${r.montant} USDT</span><span class="${r.status === 'Payé' ? 'status-ok' : 'status-pend'}">${r.status}</span></div>` + rCont.innerHTML;
-                });
-            });
-
             showPage('page-home');
         }
 
@@ -290,84 +252,18 @@
                 cont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                     <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
                     <div style="text-align:right;"><span style="color:var(--green);">${v.r} USDT/J</span><br>
-                    <button onclick="acheterVip(${v.n}, ${v.p})" class="copy-badge" style="border:none; ${isOwned ? 'background:gray;' : ''}" ${isOwned ? 'disabled' : ''}>${isOwned ? 'ACTIF' : 'ACTIVER'}</button></div>
+                    <button class="copy-badge" style="border:none; ${isOwned ? 'background:gray;' : ''}" ${isOwned ? 'disabled' : ''}>${isOwned ? 'ACTIF' : 'ACTIVER'}</button></div>
                 </div>`;
             });
         }
 
-        window.acheterVip = async (n, p) => {
-            const snap = await get(ref(db, 'users/' + currentUser));
-            if(snap.val().balance < p) return alert("Solde insuffisant !");
-            if(confirm(`Voulez-vous activer le VIP ${n} ?`)){
-                await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - p, vip: n });
-                alert("Pack VIP activé !");
-            }
-        };
-
-        window.sendPayment = async () => {
-            const m = parseFloat(document.getElementById('deposit-amount').value);
-            if(isNaN(m) || m < 20) return alert("Le montant minimum est de 20 USDT");
-            const key = push(ref(db, 'depots_pendants')).key;
-            const date = new Date().toLocaleDateString();
-            await set(ref(db, 'depots_pendants/' + key), { userId: currentUser, montant: m, date });
-            await set(ref(db, `depots_historique/${currentUser}/${key}`), { montant: m, date, status: "En attente" });
-            alert("Demande soumise !");
-            document.getElementById('deposit-amount').value = "";
-        };
-
-        window.sendWithdraw = async () => {
-            const m = parseFloat(document.getElementById('withdraw-amount').value);
-            const adr = document.getElementById('withdraw-adr').value.trim();
-            const snap = await get(ref(db, 'users/' + currentUser));
-            if(m < 10 || snap.val().balance < m) return alert("Solde insuffisant ou montant invalide.");
-            const key = push(ref(db, 'retraits_pendants')).key;
-            const date = new Date().toLocaleDateString();
-            await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - m, totalWithdrawn: (snap.val().totalWithdrawn || 0) + m });
-            await set(ref(db, 'retraits_pendants/' + key), { userId: currentUser, montant: m, adresse: adr, date });
-            await set(ref(db, `retraits_historique/${currentUser}/${key}`), { montant: m, date, status: "En cours" });
-            alert("Demande de retrait envoyée !");
-        };
-
         window.doTask = async () => {
             const snap = await get(ref(db, 'users/' + currentUser));
             const today = new Date().toDateString();
-            if(snap.val().lastTask === today) return alert("Tâche déjà effectuée aujourd'hui !");
+            if(snap.val().lastTask === today) return alert("Tâche déjà complétée pour aujourd'hui.");
             const profit = vips.find(v => v.n == snap.val().vip).r;
             await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = "+" + profit + " USDT collectés !";
-        };
-
-        window.loadAdmin = () => {
-            onValue(ref(db, 'depots_pendants'), (snap) => {
-                const cont = document.getElementById('admin-deposits');
-                cont.innerHTML = "<h3>Dépôts en attente</h3>";
-                snap.forEach(child => {
-                    const d = child.val();
-                    cont.innerHTML += `<div class="card">Email: ${d.userId}<br>Montant: ${d.montant} USDT<br><button class="btn-main" onclick="valideDepot('${child.key}','${d.userId}',${d.montant})">APPROUVER</button></div>`;
-                });
-            });
-            onValue(ref(db, 'retraits_pendants'), (snap) => {
-                const cont = document.getElementById('admin-withdrawals');
-                cont.innerHTML = "<h3>Retraits en attente</h3>";
-                snap.forEach(child => {
-                    const r = child.val();
-                    cont.innerHTML += `<div class="card">Utilisateur: ${r.userId}<br>Montant: ${r.montant} USDT<br>Adresse: ${r.adresse}<br><button class="btn-main" style="background:orange" onclick="valideRetrait('${child.key}','${r.userId}')">MARQUER PAYÉ</button></div>`;
-                });
-            });
-        };
-
-        window.valideDepot = async (key, uid, m) => {
-            const snap = await get(ref(db, 'users/' + uid));
-            await update(ref(db, 'users/' + uid), { balance: snap.val().balance + m });
-            await update(ref(db, `depots_historique/${uid}/${key}`), { status: "Approuvé" });
-            await remove(ref(db, 'depots_pendants/' + key));
-            alert("Dépôt approuvé !");
-        };
-
-        window.valideRetrait = async (key, uid) => {
-            await update(ref(db, `retraits_historique/${uid}/${key}`), { status: "Payé" });
-            await remove(ref(db, 'retraits_pendants/' + key));
-            alert("Retrait validé !");
+            document.getElementById('task-msg').innerText = "Succès : +" + profit + " USDT ajoutés !";
         };
 
         window.showPage = (id, el) => {
@@ -378,11 +274,9 @@
 
         window.toggleAuthMode = () => {
             isLogin = !isLogin;
-            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
+            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Création de compte";
             document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
             document.getElementById('field-username').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-confirm').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-ref').style.display = isLogin ? "none" : "block";
         };
 
         window.togglePass = (id, icon) => {
@@ -390,8 +284,6 @@
             el.type = el.type === "password" ? "text" : "password";
             icon.classList.toggle('fa-eye-slash');
         };
-
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien de parrainage copié !"); };
     </script>
 </body>
 </html>
