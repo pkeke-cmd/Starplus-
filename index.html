@@ -13,7 +13,7 @@
         .paj.aktive { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
         
         .input-group { position: relative; width: 100%; margin: 12px 0; }
@@ -29,12 +29,25 @@
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
         .nav-item.active { color: var(--primary); }
 
-        .status { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
-        .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
-        .tranzaksyon { font-size: 13px; padding: 12px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        /* Social Share Buttons */
+        .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .social-btn { padding: 12px; border-radius: 10px; border: none; color: white; cursor: pointer; font-size: 18px; transition: 0.3s; }
+        .fb { background: #1877f2; } .wa { background: #25d366; } .tg { background: #0088cc; }
+
+        /* Support Button */
+        .support-btn { position: fixed; right: 20px; bottom: 100px; background: var(--primary); color: black; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(192, 255, 0, 0.4); z-index: 999; cursor: pointer; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .team-box { display: flex; justify-content: space-between; margin-top: 10px; background: #000; padding: 10px; border-radius: 10px; border: 1px solid #333; }
+        .team-box span { font-size: 12px; color: var(--gray); }
+        .team-box b { color: var(--primary); }
     </style>
 </head>
 <body>
+
+    <div class="support-btn" onclick="window.open('https://t.me/starplus_support', '_blank')">
+        <i class="fas fa-headset"></i>
+    </div>
 
     <div id="paj-auth" class="paj aktive">
         <div style="text-align:center; margin-top:40px; padding: 10px;">
@@ -47,26 +60,19 @@
                 <div id="field-username" class="input-group">
                     <input type="text" id="username" placeholder="Nom d'utilisateur">
                 </div>
-
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="Adresse Email">
-                </div>
-
+                <div class="input-group"><input type="email" id="email" placeholder="Adresse Email"></div>
                 <div class="input-group">
                     <input type="password" id="pass" placeholder="Mot de passe">
                     <i class="fas fa-eye" onclick="togglePass('pass', this)"></i>
                 </div>
-
                 <div id="field-confirm" class="input-group">
                     <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
                     <i class="fas fa-eye" onclick="togglePass('pass-confirm', this)"></i>
                 </div>
                 <div id="field-ref" class="input-group">
-                    <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                    <input type="text" id="ref-code" placeholder="ID de parrainage (Optionnel)">
                 </div>
-
                 <button class="btn-main" id="btn-auth" onclick="handleAuth()">S'INSCRIRE</button>
-                
                 <p style="margin-top:25px; font-size:14px; color: var(--gray);">
                     <span id="text-ask">Déjà un membre ?</span> 
                     <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-left:5px;">Se connecter</span>
@@ -89,64 +95,42 @@
             <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button>
         </div>
 
-        <h3 style="margin-top:25px;">Mon Compte</h3>
+        <h3 style="margin-top:25px;">Statistiques</h3>
         <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 15px;">
-            <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small style="color:var(--gray);">Nom</small><br><b id="display-user">...</b></div>
-            <div><small style="color:var(--gray);">Gain/J</small><br><b id="daily-profit">0.00</b></div>
-        </div>
-
-        <h3>Historique</h3>
-        <div class="card" id="history-list">
-            <div class="tranzaksyon"><span>Compte activé</span><span class="status ok">OK</span></div>
-        </div>
-    </div>
-
-    <div id="paj-vip" class="paj"><h2 style="text-align:center;">Packs VIP</h2><div id="vip-list"></div></div>
-    
-    <div id="paj-task" class="paj">
-        <h2 style="text-align:center;">Tâches</h2>
-        <div class="card" style="text-align:center; padding:40px 20px;">
-            <i class="fas fa-coins fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info">Veuillez activer un pack.</p>
-            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button>
-            <p id="task-msg" style="margin-top:20px; color:var(--green); font-weight:bold;"></p>
-        </div>
-    </div>
-
-    <div id="paj-depot" class="paj">
-        <h2>Recharge</h2>
-        <div class="card" style="text-align:center;">
-            <p>Envoyez USDT (BEP20)</p>
-            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;">
-            <div style="font-size:10px; background:#000; padding:10px; border-radius:8px; margin-bottom:15px; border:1px solid #333;">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</div>
-            <input type="number" id="montant-depot" placeholder="Montant déposé">
-            <button class="btn-main" onclick="voyePeman()">CONFIRMER</button>
-        </div>
-    </div>
-
-    <div id="paj-retrait" class="paj">
-        <h2>Retrait</h2>
-        <div class="card">
-            <input type="number" id="ret-montant" placeholder="Montant USDT">
-            <input type="text" id="ret-adr" placeholder="Adresse BEP20">
-            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">RETIRER</button>
+            <div><small style="color:var(--gray);">Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">ID</small><br><b id="display-id" style="font-size: 11px;">...</b></div>
+            <div><small style="color:var(--gray);">Revenu/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
     </div>
 
     <div id="paj-ekip" class="paj">
-        <h2>Invitation</h2>
+        <h2>Mon Équipe</h2>
         <div class="card" style="text-align:center;">
-            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin-bottom:15px; border:1px solid #333;">...</div>
+            <p style="color:var(--gray); font-size: 13px;">Gagnez sur 3 niveaux de parrainage</p>
+            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin-bottom:15px; border:1px solid #333; word-break: break-all;">Lien de parrainage...</div>
             <button class="btn-main" onclick="copyLink()">COPIER MON LIEN</button>
+            
+            <div class="social-grid">
+                <button class="social-btn fb" onclick="shareFB()"><i class="fab fa-facebook"></i></button>
+                <button class="social-btn wa" onclick="shareWA()"><i class="fab fa-whatsapp"></i></button>
+                <button class="social-btn tg" onclick="shareTG()"><i class="fab fa-telegram"></i></button>
+            </div>
+        </div>
+
+        <h3>Rapport d'équipe</h3>
+        <div class="card">
+            <div class="team-box"><span>Level 1 (10%)</span><b id="lvl1-count">0</b></div>
+            <div class="team-box"><span>Level 2 (5%)</span><b id="lvl2-count">0</b></div>
+            <div class="team-box"><span>Level 3 (2%)</span><b id="lvl3-count">0</b></div>
+            <div class="team-box" style="margin-top:15px; border-color:var(--primary);"><span>Total Commissions</span><b id="total-comm">0.00 USDT</b></div>
         </div>
     </div>
 
-    <div id="paj-admin" class="paj">
-        <h2>Dépôts en attente</h2>
-        <div id="admin-list"></div>
-        <button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button>
-    </div>
+    <div id="paj-vip" class="paj"><h2 style="text-align:center;">Packs VIP</h2><div id="vip-list"></div></div>
+    <div id="paj-task" class="paj"><h2 style="text-align:center;">Tâches</h2><div class="card" style="text-align:center; padding:40px 20px;"><i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i><p id="task-info">Veuillez activer un pack.</p><button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button><p id="task-msg" style="margin-top:20px; color:var(--green);"></p></div></div>
+    <div id="paj-depot" class="paj"><h2>Dépôt USDT</h2><div class="card" style="text-align:center;"><img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;"><div style="font-size:10px; background:#000; padding:10px; border-radius:8px; border:1px solid #333;">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</div><input type="number" id="montant-depot" placeholder="Montant"><button class="btn-main" onclick="voyePeman()">CONFIRMER</button></div></div>
+    <div id="paj-retrait" class="paj"><h2>Retrait</h2><div class="card"><input type="number" id="ret-montant" placeholder="Montant"><input type="text" id="ret-adr" placeholder="Adresse BEP20"><button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">RETIRER</button></div></div>
+    <div id="paj-admin" class="paj"><h2>Admin Panel</h2><div id="admin-list"></div><button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button></div>
 
     <nav id="main-nav" class="nav-bar" style="display:none;">
         <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
@@ -173,83 +157,75 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         let currentUser = null;
-        let isLogin = false; // Par défaut: Inscription
+        let isLogin = false;
 
         const vips = [
             {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
             {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
         ];
 
-        // --- GESTION DES CHAMPS (LOGIN / SIGNUP) ---
-        window.toggleAuthMode = () => {
-            isLogin = !isLogin;
-            const title = document.getElementById('auth-title');
-            const btn = document.getElementById('btn-auth');
-            const ask = document.getElementById('text-ask');
-            const link = document.getElementById('toggle-link');
-            
-            // Pati pou kache/montre
-            const fUser = document.getElementById('field-username');
-            const fConfirm = document.getElementById('field-confirm');
-            const fRef = document.getElementById('field-ref');
-
-            if (isLogin) {
-                title.innerText = "Connexion";
-                btn.innerText = "SE CONNECTER";
-                ask.innerText = "Pas encore de compte ?";
-                link.innerText = "S'inscrire";
-                fUser.style.display = "none";
-                fConfirm.style.display = "none";
-                fRef.style.display = "none";
-            } else {
-                title.innerText = "Créer un compte";
-                btn.innerText = "S'INSCRIRE";
-                ask.innerText = "Déjà un membre ?";
-                link.innerText = "Se connecter";
-                fUser.style.display = "block";
-                fConfirm.style.display = "block";
-                fRef.style.display = "block";
-            }
-        };
-
-        // --- AUTH LOGIC ---
+        // --- AUTH & MLM LOGIC ---
         window.handleAuth = async () => {
-            const email = document.getElementById('email').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
             const pass = document.getElementById('pass').value.trim();
             const user = document.getElementById('username').value.trim();
-            const confirm = document.getElementById('pass-confirm').value.trim();
+            const refID = document.getElementById('ref-code').value.trim(); // Email parrain an
             
             if(!email || !pass) return alert("Veuillez remplir les champs.");
             const id = email.replace(/\./g, '_');
             const uRef = ref(db, 'users/' + id);
 
             if(!isLogin) { // Inscription
-                if(!user || pass !== confirm) return alert("Vérifiez vos informations.");
                 const check = await get(uRef);
-                if(check.exists()) return alert("Cet email est déjà pris.");
-                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, lastTask: "" });
-                alert("Compte créé !");
+                if(check.exists()) return alert("Email déjà utilisé.");
+                
+                // Kreye kont
+                await set(uRef, { 
+                    username: user, email, pass, balance: 0, vip: 0, lastTask: "", 
+                    referredBy: refID ? refID.replace(/\./g, '_') : null,
+                    commissions: 0, lvl1: 0, lvl2: 0, lvl3: 0
+                });
+
+                // Mizajou ekip parrain an si genyen
+                if(refID) await updateTeam(refID.replace(/\./g, '_'), 1);
+                alert("Compte créé avec succès !");
             } else { // Connexion
                 const snap = await get(uRef);
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Email ou mot de passe incorrect.");
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants incorrects.");
             }
             currentUser = id;
             initApp(email);
         };
 
-        // --- INIT APP ---
+        async function updateTeam(parentID, depth) {
+            if(!parentID || depth > 3) return;
+            const pRef = ref(db, 'users/' + parentID);
+            const snap = await get(pRef);
+            if(snap.exists()) {
+                let data = snap.val();
+                if(depth === 1) await update(pRef, { lvl1: (data.lvl1 || 0) + 1 });
+                if(depth === 2) await update(pRef, { lvl2: (data.lvl2 || 0) + 1 });
+                if(depth === 3) await update(pRef, { lvl3: (data.lvl3 || 0) + 1 });
+                if(data.referredBy) await updateTeam(data.referredBy, depth + 1);
+            }
+        }
+
         function initApp(email) {
             document.getElementById('paj-auth').style.display = 'none';
             document.getElementById('main-nav').style.display = 'flex';
-            document.getElementById('ref-link').innerText = window.location.href + "?ref=" + email.split('@')[0];
-            if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = 'block';
+            const link = window.location.origin + window.location.pathname + "?ref=" + email;
+            document.getElementById('ref-link').innerText = link;
+            document.getElementById('display-id').innerText = email;
 
             onValue(ref(db, 'users/' + currentUser), (snap) => {
                 const d = snap.val();
-                if(!d) return;
                 document.getElementById('user-balance').innerText = d.balance.toFixed(2);
-                document.getElementById('display-user').innerText = d.username;
                 document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
+                document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
+                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
+                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
+                document.getElementById('total-comm').innerText = (d.commissions || 0).toFixed(2) + " USDT";
+                
                 const prof = vips.find(v => v.n == d.vip).r;
                 document.getElementById('daily-profit').innerText = prof.toFixed(2);
                 document.getElementById('btn-task').disabled = (d.vip === 0);
@@ -257,43 +233,87 @@
             montrePaj('paj-home');
         }
 
+        // --- DEPOSITS & MLM COMMISSIONS ---
+        window.valideDepot = async (key, uid, m) => {
+            const uRef = ref(db, 'users/' + uid);
+            const snap = await get(uRef);
+            const data = snap.val();
+            
+            const nouvoBal = data.balance + m;
+            let nvVip = 0;
+            vips.forEach(v => { if(nouvoBal >= v.p) nvVip = v.n; });
+            
+            await update(uRef, { balance: nouvoBal, vip: nvVip });
+            await distributeComm(data.referredBy, m, 1); // Distribye kòb bay parrain yo
+            await remove(ref(db, 'depots_pendants/' + key));
+        };
+
+        async function distributeComm(parentID, amount, depth) {
+            if(!parentID || depth > 3) return;
+            const rates = { 1: 0.10, 2: 0.05, 3: 0.02 }; // 10%, 5%, 2%
+            const pRef = ref(db, 'users/' + parentID);
+            const snap = await get(pRef);
+            if(snap.exists()) {
+                const comm = amount * rates[depth];
+                await update(pRef, { 
+                    balance: snap.val().balance + comm,
+                    commissions: (snap.val().commissions || 0) + comm
+                });
+                if(snap.val().referredBy) await distributeComm(snap.val().referredBy, amount, depth + 1);
+            }
+        }
+
+        // --- UI & SOCIAL ---
+        window.toggleAuthMode = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
+            document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
+            document.getElementById('field-username').style.display = isLogin ? "none" : "block";
+            document.getElementById('field-confirm').style.display = isLogin ? "none" : "block";
+            document.getElementById('field-ref').style.display = isLogin ? "none" : "block";
+        };
+
         window.togglePass = (id, icon) => {
             const el = document.getElementById(id);
-            if (el.type === "password") {
-                el.type = "text";
-                icon.classList.replace("fa-eye", "fa-eye-slash");
-            } else {
-                el.type = "password";
-                icon.classList.replace("fa-eye-slash", "fa-eye");
-            }
+            el.type = el.type === "password" ? "text" : "password";
+            icon.classList.toggle('fa-eye-slash');
         };
 
         window.montrePaj = (id, el) => {
             document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
             document.getElementById(id).classList.add('aktive');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
         };
 
-        // --- TASKS & ADMIN ---
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
+        
+        // Social functions
+        window.shareWA = () => { window.open(`https://wa.me/?text=Rejoignez STARPLUS et gagnez des USDT chaque jour ! Mon lien: ${document.getElementById('ref-link').innerText}`); };
+        window.shareFB = () => { window.open(`https://www.facebook.com/sharer/sharer.php?u=${document.getElementById('ref-link').innerText}`); };
+        window.shareTG = () => { window.open(`https://telegram.me/share/url?url=${document.getElementById('ref-link').innerText}&text=Investissez avec STARPLUS`); };
+
+        // Handle URL referral
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.has('ref')) document.getElementById('ref-code').value = urlParams.get('ref');
+        };
+
+        // ... Lòt fonksyon yo (voyePeman, faireTask, chajeAdmin) rete menm jan ...
         window.voyePeman = async () => {
             const m = document.getElementById('montant-depot').value;
             if(m < 20) return alert("Min 20 USDT");
             await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: parseFloat(m) });
-            alert("Soumis !");
+            alert("Requête de dépôt envoyée !");
         };
 
         window.faireTask = async () => {
             const uRef = ref(db, 'users/' + currentUser);
             const snap = await get(uRef);
-            const d = snap.val();
             const today = new Date().toDateString();
-            if(d.lastTask === today) return alert("Déjà fait !");
-            const profit = vips.find(v => v.n == d.vip).r;
-            await update(uRef, { balance: d.balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = "+ " + profit + " USDT ajouté !";
+            if(snap.val().lastTask === today) return alert("Déjà récolté aujourd'hui.");
+            const profit = vips.find(v => v.n == snap.val().vip).r;
+            await update(uRef, { balance: snap.val().balance + profit, lastTask: today });
+            document.getElementById('task-msg').innerText = "Succès: +" + profit + " USDT !";
         };
 
         window.chajeAdmin = () => {
@@ -301,29 +321,16 @@
                 const cont = document.getElementById('admin-list');
                 cont.innerHTML = "";
                 snap.forEach(child => {
-                    cont.innerHTML += `<div class="card">${child.val().userId} : ${child.val().montant} USDT <button class="btn-main" onclick="valideDepot('${child.key}','${child.val().userId}',${child.val().montant})">Valider</button></div>`;
+                    cont.innerHTML += `<div class="card">${child.val().userId} : ${child.val().montant} USDT <br><button class="btn-main" onclick="valideDepot('${child.key}','${child.val().userId}',${child.val().montant})">Approuver</button></div>`;
                 });
             });
         };
 
-        window.valideDepot = async (key, uid, m) => {
-            const uRef = ref(db, 'users/' + uid);
-            const snap = await get(uRef);
-            const nouvoBal = snap.val().balance + m;
-            let nvVip = 0;
-            vips.forEach(v => { if(nouvoBal >= v.p) nvVip = v.n; });
-            await update(uRef, { balance: nouvoBal, vip: nvVip });
-            await remove(ref(db, 'depots_pendants/' + key));
-        };
-
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Copié !"); };
-
-        // VIP LIST
         const vCont = document.getElementById('vip-list');
         vips.slice(1).forEach(v => {
             vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between;">
                 <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
-                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px;">Activer</button></div>
+                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px; font-weight:bold;">Acheter</button></div>
             </div>`;
         });
     </script>
