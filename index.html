@@ -34,6 +34,11 @@
         .wallet-address { font-size: 11px; color: var(--primary); word-break: break-all; margin-bottom: 10px; display: block; }
         .copy-badge { background: var(--primary); color: #000; padding: 5px 12px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; display: inline-block; }
 
+        /* Style pou Istorik */
+        .hist-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #222; font-size: 13px; align-items: center; }
+        .status-pend { color: orange; font-weight: bold; }
+        .status-ok { color: var(--green); font-weight: bold; }
+
         .support-btn { position: fixed; right: 20px; bottom: 100px; background: var(--primary); color: black; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(192, 255, 0, 0.4); z-index: 999; cursor: pointer; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
@@ -93,18 +98,20 @@
         <div class="card">
             <div style="text-align:center;">
                 <p style="font-size: 13px; color: var(--gray);">Envoyez uniquement du <b>USDT BEP20</b></p>
-                <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;">
-                
                 <div class="wallet-box">
-                    <span class="wallet-address" id="comp-addr">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
+                    <span class="wallet-address">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
                     <span class="copy-badge" onclick="copyToClipboard('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')">COPIER L'ADRESSE</span>
                 </div>
             </div>
-
             <div class="input-group">
-                <input type="number" id="montant-depot" placeholder="Montant transféré (Min 20)">
+                <input type="number" id="montant-depot" placeholder="Montant transféré (Ex: 20)">
             </div>
             <button class="btn-main" onclick="voyePeman()">CONFIRMER LE TRANSFERT</button>
+        </div>
+
+        <h3>Historique des dépôts</h3>
+        <div class="card" id="hist-depot-list">
+            <p style="text-align:center; font-size:12px; color:var(--gray);">Aucun dépôt.</p>
         </div>
     </div>
 
@@ -120,18 +127,23 @@
             </div>
             <button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">DEMANDER LE RETRAIT</button>
         </div>
+
+        <h3>Historique des Retraits</h3>
+        <div class="card" id="hist-retrait-list">
+            <p style="text-align:center; font-size:12px; color:var(--gray);">Aucun retrait.</p>
+        </div>
     </div>
 
     <div id="paj-vip" class="paj">
-        <h2 style="text-align:center;">Nos Packs VIP</h2>
+        <h2 style="text-align:center;">Packs VIP</h2>
         <div id="vip-list"></div>
     </div>
 
     <div id="paj-task" class="paj">
-        <h2 style="text-align:center;">Tâches Quotidiennes</h2>
+        <h2 style="text-align:center;">Tâches</h2>
         <div class="card" style="text-align:center; padding:40px 20px;">
             <i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info">Activez un pack VIP pour commencer à gagner.</p>
+            <p id="task-info">...</p>
             <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER LE PROFIT</button>
             <p id="task-msg" style="margin-top:20px; color:var(--green); font-weight:bold;"></p>
         </div>
@@ -140,7 +152,6 @@
     <div id="paj-ekip" class="paj">
         <h2>Mon Équipe</h2>
         <div class="card" style="text-align:center;">
-            <small style="color:var(--gray);">Lien de parrainage</small>
             <div class="wallet-box">
                 <span id="ref-link" class="wallet-address" style="font-size:10px;">...</span>
                 <span class="copy-badge" onclick="copyLink()">COPIER MON LIEN</span>
@@ -155,7 +166,8 @@
 
     <div id="paj-admin" class="paj">
         <h2>Panel Administration</h2>
-        <div id="admin-list"></div>
+        <div id="admin-depots"></div>
+        <div id="admin-retraits"></div>
         <button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button>
     </div>
 
@@ -191,12 +203,8 @@
             {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
         ];
 
-        window.copyToClipboard = (text) => {
-            navigator.clipboard.writeText(text);
-            alert("Copié !");
-        };
+        window.copyToClipboard = (text) => { navigator.clipboard.writeText(text); alert("Copié !"); };
 
-        // --- AUTH LOGIC ---
         window.handleAuth = async () => {
             const email = document.getElementById('email').value.trim().toLowerCase();
             const pass = document.getElementById('pass').value.trim();
@@ -209,16 +217,13 @@
 
             if(!isLogin) {
                 const check = await get(uRef);
-                if(check.exists()) return alert("Email déjà utilisé.");
-                await set(uRef, { 
-                    username: user, email, pass, balance: 0, vip: 0, lastTask: "", 
-                    referredBy: refID || null, commissions: 0, lvl1: 0, lvl2: 0, lvl3: 0, totalWithdrawn: 0
-                });
+                if(check.exists()) return alert("Email utilisé.");
+                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, lastTask: "", referredBy: refID || null, lvl1: 0, lvl2: 0, lvl3: 0, totalWithdrawn: 0 });
                 if(refID) updateTeamCount(refID, 1);
-                alert("Compte créé avec succès !");
+                alert("Compte créé !");
             } else {
                 const snap = await get(uRef);
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants incorrects.");
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Erreur identifiants.");
             }
             currentUser = id;
             if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = "block";
@@ -230,11 +235,10 @@
             const pRef = ref(db, 'users/' + pID);
             const snap = await get(pRef);
             if(snap.exists()){
-                let d = snap.val();
                 let updateData = {};
-                updateData['lvl' + depth] = (d['lvl' + depth] || 0) + 1;
+                updateData['lvl' + depth] = (snap.val()['lvl' + depth] || 0) + 1;
                 await update(pRef, updateData);
-                if(d.referredBy) updateTeamCount(d.referredBy, depth + 1);
+                if(snap.val().referredBy) updateTeamCount(snap.val().referredBy, depth + 1);
             }
         }
 
@@ -248,127 +252,128 @@
                 document.getElementById('user-balance').innerText = d.balance.toFixed(2);
                 document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
                 document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
-                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
-                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
                 document.getElementById('total-withdrawn').innerText = (d.totalWithdrawn || 0).toFixed(2);
-                
                 const currentVip = vips.find(v => v.n == d.vip);
                 document.getElementById('daily-profit').innerText = currentVip.r.toFixed(2);
                 document.getElementById('btn-task').disabled = (d.vip === 0);
-                document.getElementById('task-info').innerText = d.vip > 0 ? `Votre pack VIP ${d.vip} est actif.` : "Activez un pack VIP pour commencer.";
-                
+                document.getElementById('task-info').innerText = d.vip > 0 ? `Pack VIP ${d.vip} actif` : "Activez un pack";
                 renderVips(d.balance, d.vip);
             });
+
+            // Chaje Istorik Depo
+            onValue(ref(db, 'depots_historique/' + currentUser), (snap) => {
+                const hCont = document.getElementById('hist-depot-list');
+                hCont.innerHTML = "";
+                if(!snap.exists()) hCont.innerHTML = "<p style='text-align:center;font-size:12px;color:var(--gray);'>Aucun dépôt.</p>";
+                snap.forEach(child => {
+                    const h = child.val();
+                    hCont.innerHTML = `<div class="hist-item"><span>${h.date}</span><span>${h.montant} USDT</span><span class="${h.status === 'Approuvé' ? 'status-ok' : 'status-pend'}">${h.status}</span></div>` + hCont.innerHTML;
+                });
+            });
+
+            // Chaje Istorik Retrè
+            onValue(ref(db, 'retraits_historique/' + currentUser), (snap) => {
+                const rCont = document.getElementById('hist-retrait-list');
+                rCont.innerHTML = "";
+                if(!snap.exists()) rCont.innerHTML = "<p style='text-align:center;font-size:12px;color:var(--gray);'>Aucun retrait.</p>";
+                snap.forEach(child => {
+                    const r = child.val();
+                    rCont.innerHTML = `<div class="hist-item"><span>${r.date}</span><span>${r.montant} USDT</span><span class="${r.status === 'Payé' ? 'status-ok' : 'status-pend'}">${r.status}</span></div>` + rCont.innerHTML;
+                });
+            });
+
             montrePaj('paj-home');
         }
 
-        // --- VIP PURCHASE LOGIC ---
         function renderVips(balance, userVip) {
             const cont = document.getElementById('vip-list');
             cont.innerHTML = "";
             vips.slice(1).forEach(v => {
                 const isOwned = userVip >= v.n;
-                cont.innerHTML += `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-left: 5px solid ${isOwned ? 'var(--primary)' : '#333'}">
-                        <div>
-                            <b style="font-size:18px;">VIP ${v.n}</b><br>
-                            <small style="color:var(--gray);">Prix: ${v.p} USDT</small>
-                        </div>
-                        <div style="text-align:right;">
-                            <span style="color:var(--green); font-weight:bold;">${v.r} USDT / jour</span><br>
-                            <button onclick="acheterVip(${v.n}, ${v.p})" class="copy-badge" style="margin-top:8px; border:none; ${isOwned ? 'background:gray; color:white;' : ''}" ${isOwned ? 'disabled' : ''}>
-                                ${isOwned ? 'ACTIF' : 'ACTIVER'}
-                            </button>
-                        </div>
-                    </div>`;
+                cont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
+                    <div style="text-align:right;"><span style="color:var(--green);">${v.r} USDT/J</span><br>
+                    <button onclick="acheterVip(${v.n}, ${v.p})" class="copy-badge" style="border:none; ${isOwned ? 'background:gray;' : ''}" ${isOwned ? 'disabled' : ''}>${isOwned ? 'ACTIF' : 'ACTIVER'}</button></div>
+                </div>`;
             });
         }
 
         window.acheterVip = async (n, p) => {
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            const d = snap.val();
-            if(d.balance < p) return alert("Solde insuffisant. Faites un dépôt de " + p + " USDT.");
-            if(confirm(`Activer le pack VIP ${n} pour ${p} USDT ?`)){
-                await update(uRef, { balance: d.balance - p, vip: n });
-                alert("Pack activé !");
+            const snap = await get(ref(db, 'users/' + currentUser));
+            if(snap.val().balance < p) return alert("Solde insuffisant !");
+            if(confirm(`Activer VIP ${n} ?`)){
+                await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - p, vip: n });
+                alert("Activé !");
             }
         };
 
-        // --- TRANSACTIONS ---
         window.voyePeman = async () => {
             const m = parseFloat(document.getElementById('montant-depot').value);
             if(isNaN(m) || m < 20) return alert("Minimum 20 USDT");
-            await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: m, date: new Date().toLocaleString() });
-            alert("Demande envoyée !");
+            const key = push(ref(db, 'depots_pendants')).key;
+            const date = new Date().toLocaleDateString();
+            await set(ref(db, 'depots_pendants/' + key), { userId: currentUser, montant: m, date });
+            await set(ref(db, `depots_historique/${currentUser}/${key}`), { montant: m, date, status: "En attente" });
+            alert("Soumis avec succès !");
+            document.getElementById('montant-depot').value = "";
         };
 
         window.voyeRetrait = async () => {
             const m = parseFloat(document.getElementById('ret-montant').value);
             const adr = document.getElementById('ret-adr').value.trim();
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            const d = snap.val();
-            
-            if(m < 10 || isNaN(m)) return alert("Minimum 10 USDT");
-            if(adr.length < 10) return alert("Adresse BEP20 invalide");
-            if(d.balance < m) return alert("Solde insuffisant");
-
-            await update(uRef, { balance: d.balance - m, totalWithdrawn: (d.totalWithdrawn || 0) + m });
-            await push(ref(db, 'retraits_pendants'), { userId: currentUser, montant: m, adresse: adr });
-            alert("Retrait en cours de traitement.");
+            const snap = await get(ref(db, 'users/' + currentUser));
+            if(m < 10 || snap.val().balance < m) return alert("Montant invalide.");
+            const key = push(ref(db, 'retraits_pendants')).key;
+            const date = new Date().toLocaleDateString();
+            await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - m, totalWithdrawn: (snap.val().totalWithdrawn || 0) + m });
+            await set(ref(db, 'retraits_pendants/' + key), { userId: currentUser, montant: m, adresse: adr, date });
+            await set(ref(db, `retraits_historique/${currentUser}/${key}`), { montant: m, date, status: "En cours" });
+            alert("Demande de retrait envoyée !");
         };
 
         window.faireTask = async () => {
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            const d = snap.val();
+            const snap = await get(ref(db, 'users/' + currentUser));
             const today = new Date().toDateString();
-            if(d.lastTask === today) return alert("Revenu déjà collecté aujourd'hui.");
-            
-            const profit = vips.find(v => v.n == d.vip).r;
-            await update(uRef, { balance: d.balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = "Succès: +" + profit + " USDT ajouté !";
+            if(snap.val().lastTask === today) return alert("Déjà fait !");
+            const profit = vips.find(v => v.n == snap.val().vip).r;
+            await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance + profit, lastTask: today });
+            document.getElementById('task-msg').innerText = "+" + profit + " USDT collecté !";
         };
 
-        // --- ADMIN LOGIC ---
+        // ADMIN
         window.chajeAdmin = () => {
             onValue(ref(db, 'depots_pendants'), (snap) => {
-                const cont = document.getElementById('admin-list');
-                cont.innerHTML = "<h3>Dépôts à valider</h3>";
+                const cont = document.getElementById('admin-depots');
+                cont.innerHTML = "<h3>Dépôts en attente</h3>";
                 snap.forEach(child => {
-                    cont.innerHTML += `<div class="card">
-                        User: ${child.val().userId}<br>Montant: ${child.val().montant} USDT<br>
-                        <button class="btn-main" onclick="valideDepot('${child.key}','${child.val().userId}',${child.val().montant})">APPROUVER</button>
-                    </div>`;
+                    const d = child.val();
+                    cont.innerHTML += `<div class="card">Email: ${d.userId}<br>Montant: ${d.montant} USDT<br><button class="btn-main" onclick="valideDepot('${child.key}','${d.userId}',${d.montant})">APPROUVER</button></div>`;
+                });
+            });
+            onValue(ref(db, 'retraits_pendants'), (snap) => {
+                const cont = document.getElementById('admin-retraits');
+                cont.innerHTML = "<h3>Retraits en attente</h3>";
+                snap.forEach(child => {
+                    const r = child.val();
+                    cont.innerHTML += `<div class="card">User: ${r.userId}<br>Montant: ${r.montant} USDT<br>Adr: ${r.adresse}<br><button class="btn-main" style="background:orange" onclick="valideRetrait('${child.key}','${r.userId}')">MARQUER PAYÉ</button></div>`;
                 });
             });
         };
 
         window.valideDepot = async (key, uid, m) => {
-            const uRef = ref(db, 'users/' + uid);
-            const snap = await get(uRef);
-            if(snap.exists()){
-                await update(uRef, { balance: snap.val().balance + m });
-                distribyeKomisyon(snap.val().referredBy, m, 1);
-                await remove(ref(db, 'depots_pendants/' + key));
-                alert("Dépot approuvé !");
-            }
+            const snap = await get(ref(db, 'users/' + uid));
+            await update(ref(db, 'users/' + uid), { balance: snap.val().balance + m });
+            await update(ref(db, `depots_historique/${uid}/${key}`), { status: "Approuvé" });
+            await remove(ref(db, 'depots_pendants/' + key));
+            alert("Dépôt validé !");
         };
 
-        async function distribyeKomisyon(pID, m, depth) {
-            if(!pID || depth > 3) return;
-            const rates = {1: 0.10, 2: 0.05, 3: 0.02};
-            const pRef = ref(db, 'users/' + pID);
-            const snap = await get(pRef);
-            if(snap.exists()){
-                const comm = m * rates[depth];
-                await update(pRef, { balance: snap.val().balance + comm, commissions: (snap.val().commissions || 0) + comm });
-                if(snap.val().referredBy) distribyeKomisyon(snap.val().referredBy, m, depth + 1);
-            }
-        }
+        window.valideRetrait = async (key, uid) => {
+            await update(ref(db, `retraits_historique/${uid}/${key}`), { status: "Payé" });
+            await remove(ref(db, 'retraits_pendants/' + key));
+            alert("Retrait marqué comme payé !");
+        };
 
-        // --- UI HELPERS ---
         window.montrePaj = (id, el) => {
             document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
             document.getElementById(id).classList.add('aktive');
@@ -391,11 +396,6 @@
         };
 
         window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
-
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if(urlParams.has('ref')) document.getElementById('ref-code').value = urlParams.get('ref');
-        };
     </script>
 </body>
 </html>
