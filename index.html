@@ -13,82 +13,72 @@
         .paj.aktive { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
         .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
         
-        .input-group { position: relative; width: 100%; margin: 15px 0; }
+        .input-group { position: relative; width: 100%; margin: 12px 0; }
         input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #333; background: rgba(0,0,0,0.6); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(192, 255, 0, 0.1); }
-        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); cursor: pointer; padding: 5px; z-index: 10; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(192, 255, 0, 0.1); }
+        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); cursor: pointer; padding: 10px; z-index: 10; }
 
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 10px; }
-        .btn-main:active { transform: scale(0.97); }
+        .btn-main:active { transform: scale(0.98); }
 
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(22,26,30,0.98); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; }
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
-        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item.active { color: var(--primary); }
 
         .status { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
         .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
-        .tranzaksyon { font-size: 13px; padding: 12px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .tranzaksyon { font-size: 13px; padding: 12px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
     <div id="paj-auth" class="paj aktive">
-        <div style="text-align:center; margin-top:40px; padding: 15px;">
-            <h1 style="color:var(--primary); font-size:50px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
-            <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">L'avenir de l'investissement commence ici.</p>
+        <div style="text-align:center; margin-top:40px; padding: 10px;">
+            <h1 style="color:var(--primary); font-size:48px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
+            <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">Investissez dans le futur.</p>
             
-            <div class="card" style="width:100%; max-width:400px; margin:auto;">
-                <h3 id="auth-title" style="margin-bottom: 25px; font-size: 24px;">Créer un compte</h3>
+            <div class="card" style="width:100%; max-width:380px; margin:auto;">
+                <h3 id="auth-title" style="margin-bottom: 20px; font-size: 22px;">Créer un compte</h3>
                 
-                <div id="form-signup">
-                    <div class="input-group">
-                        <input type="text" id="reg-username" placeholder="Nom d'utilisateur">
-                    </div>
-                    <div class="input-group">
-                        <input type="email" id="reg-email" placeholder="Adresse Email">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="reg-pass" placeholder="Mot de passe">
-                        <i class="fas fa-eye" onclick="togglePass('reg-pass', this)"></i>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="reg-confirm" placeholder="Confirmer mot de passe">
-                        <i class="fas fa-eye" onclick="togglePass('reg-confirm', this)"></i>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="reg-ref" placeholder="Code d'invitation (Optionnel)">
-                    </div>
-                    <button class="btn-main" onclick="handleSignup()">S'INSCRIRE</button>
-                    <p style="margin-top:20px; font-size:14px; color: var(--gray);">
-                        Déjà inscrit ? <span onclick="switchToConnexion()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Se connecter</span>
-                    </p>
+                <div id="field-username" class="input-group">
+                    <input type="text" id="username" placeholder="Nom d'utilisateur">
                 </div>
 
-                <div id="form-login" style="display:none;">
-                    <div class="input-group">
-                        <input type="email" id="login-email" placeholder="Adresse Email">
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="login-pass" placeholder="Mot de passe">
-                        <i class="fas fa-eye" onclick="togglePass('login-pass', this)"></i>
-                    </div>
-                    <button class="btn-main" onclick="handleLogin()">SE CONNECTER</button>
-                    <p style="margin-top:20px; font-size:14px; color: var(--gray);">
-                        Pas encore de compte ? <span onclick="switchToSignup()" style="color:var(--primary); cursor:pointer; font-weight:bold;">S'inscrire</span>
-                    </p>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Adresse Email">
                 </div>
+
+                <div class="input-group">
+                    <input type="password" id="pass" placeholder="Mot de passe">
+                    <i class="fas fa-eye" onclick="togglePass('pass', this)"></i>
+                </div>
+
+                <div id="field-confirm" class="input-group">
+                    <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
+                    <i class="fas fa-eye" onclick="togglePass('pass-confirm', this)"></i>
+                </div>
+                <div id="field-ref" class="input-group">
+                    <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                </div>
+
+                <button class="btn-main" id="btn-auth" onclick="handleAuth()">S'INSCRIRE</button>
+                
+                <p style="margin-top:25px; font-size:14px; color: var(--gray);">
+                    <span id="text-ask">Déjà un membre ?</span> 
+                    <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-left:5px;">Se connecter</span>
+                </p>
             </div>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px; font-weight:600;">Solde Disponible</small>
-            <h1 style="font-size: 45px; margin: 12px 0;"><span id="user-balance">0.00</span> <span style="font-size:18px; color:var(--primary);">USDT</span></h1>
+            <small style="color:var(--gray); text-transform:uppercase; font-weight:bold;">Solde USDT</small>
+            <h1 style="font-size: 45px; margin: 10px 0;"><span id="user-balance">0.00</span></h1>
             <div style="display:flex; gap:12px; margin-top:20px;">
                 <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff; flex:1;">Dépôt</button>
                 <button class="btn-main" onclick="montrePaj('paj-retrait')" style="flex:1;">Retrait</button>
@@ -96,36 +86,246 @@
         </div>
 
         <div id="admin-shortcut" style="display:none; margin-top: 15px;">
-            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMINISTRATION</button>
+            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button>
         </div>
 
-        <h3 style="margin-top:30px;">Statut du Compte</h3>
-        <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
+        <h3 style="margin-top:25px;">Mon Compte</h3>
+        <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 15px;">
             <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small style="color:var(--gray);">Membre</small><br><b id="display-user">...</b></div>
+            <div><small style="color:var(--gray);">Nom</small><br><b id="display-user">...</b></div>
             <div><small style="color:var(--gray);">Gain/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
 
-        <h3>Activités Récentes</h3>
+        <h3>Historique</h3>
         <div class="card" id="history-list">
-            <div class="tranzaksyon"><span>Système Starplus prêt</span><span class="status ok">OK</span></div>
+            <div class="tranzaksyon"><span>Compte activé</span><span class="status ok">OK</span></div>
         </div>
     </div>
 
-    <div id="paj-vip" class="paj">
-        <h2 style="text-align:center; color:var(--primary);">Packs VIP</h2>
-        <div id="vip-list"></div>
-    </div>
-
+    <div id="paj-vip" class="paj"><h2 style="text-align:center;">Packs VIP</h2><div id="vip-list"></div></div>
+    
     <div id="paj-task" class="paj">
-        <h2 style="text-align:center;">Tâches Quotidiennes</h2>
+        <h2 style="text-align:center;">Tâches</h2>
         <div class="card" style="text-align:center; padding:40px 20px;">
             <i class="fas fa-coins fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info" style="color:var(--gray); margin-bottom:20px;">Activez un VIP pour commencer.</p>
-            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCUPÉRER COMMISSION</button>
-            <p id="task-msg" style="margin-top:20px; font-weight:bold;"></p>
+            <p id="task-info">Veuillez activer un pack.</p>
+            <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button>
+            <p id="task-msg" style="margin-top:20px; color:var(--green); font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="paj-depot" class="paj">
-        <h2>Recharge USDT (BEP20
+        <h2>Recharge</h2>
+        <div class="card" style="text-align:center;">
+            <p>Envoyez USDT (BEP20)</p>
+            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;">
+            <div style="font-size:10px; background:#000; padding:10px; border-radius:8px; margin-bottom:15px; border:1px solid #333;">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</div>
+            <input type="number" id="montant-depot" placeholder="Montant déposé">
+            <button class="btn-main" onclick="voyePeman()">CONFIRMER</button>
+        </div>
+    </div>
+
+    <div id="paj-retrait" class="paj">
+        <h2>Retrait</h2>
+        <div class="card">
+            <input type="number" id="ret-montant" placeholder="Montant USDT">
+            <input type="text" id="ret-adr" placeholder="Adresse BEP20">
+            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">RETIRER</button>
+        </div>
+    </div>
+
+    <div id="paj-ekip" class="paj">
+        <h2>Invitation</h2>
+        <div class="card" style="text-align:center;">
+            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin-bottom:15px; border:1px solid #333;">...</div>
+            <button class="btn-main" onclick="copyLink()">COPIER MON LIEN</button>
+        </div>
+    </div>
+
+    <div id="paj-admin" class="paj">
+        <h2>Dépôts en attente</h2>
+        <div id="admin-list"></div>
+        <button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button>
+    </div>
+
+    <nav id="main-nav" class="nav-bar" style="display:none;">
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
+        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
+        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-bolt"></i><br>Tâches</div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Quitter</div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "starplus-47411.firebaseapp.com",
+            databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
+            projectId: "starplus-47411",
+            storageBucket: "starplus-47411.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let currentUser = null;
+        let isLogin = false; // Par défaut: Inscription
+
+        const vips = [
+            {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
+            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
+        ];
+
+        // --- GESTION DES CHAMPS (LOGIN / SIGNUP) ---
+        window.toggleAuthMode = () => {
+            isLogin = !isLogin;
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('btn-auth');
+            const ask = document.getElementById('text-ask');
+            const link = document.getElementById('toggle-link');
+            
+            // Pati pou kache/montre
+            const fUser = document.getElementById('field-username');
+            const fConfirm = document.getElementById('field-confirm');
+            const fRef = document.getElementById('field-ref');
+
+            if (isLogin) {
+                title.innerText = "Connexion";
+                btn.innerText = "SE CONNECTER";
+                ask.innerText = "Pas encore de compte ?";
+                link.innerText = "S'inscrire";
+                fUser.style.display = "none";
+                fConfirm.style.display = "none";
+                fRef.style.display = "none";
+            } else {
+                title.innerText = "Créer un compte";
+                btn.innerText = "S'INSCRIRE";
+                ask.innerText = "Déjà un membre ?";
+                link.innerText = "Se connecter";
+                fUser.style.display = "block";
+                fConfirm.style.display = "block";
+                fRef.style.display = "block";
+            }
+        };
+
+        // --- AUTH LOGIC ---
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('pass').value.trim();
+            const user = document.getElementById('username').value.trim();
+            const confirm = document.getElementById('pass-confirm').value.trim();
+            
+            if(!email || !pass) return alert("Veuillez remplir les champs.");
+            const id = email.replace(/\./g, '_');
+            const uRef = ref(db, 'users/' + id);
+
+            if(!isLogin) { // Inscription
+                if(!user || pass !== confirm) return alert("Vérifiez vos informations.");
+                const check = await get(uRef);
+                if(check.exists()) return alert("Cet email est déjà pris.");
+                await set(uRef, { username: user, email, pass, balance: 0, vip: 0, lastTask: "" });
+                alert("Compte créé !");
+            } else { // Connexion
+                const snap = await get(uRef);
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Email ou mot de passe incorrect.");
+            }
+            currentUser = id;
+            initApp(email);
+        };
+
+        // --- INIT APP ---
+        function initApp(email) {
+            document.getElementById('paj-auth').style.display = 'none';
+            document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('ref-link').innerText = window.location.href + "?ref=" + email.split('@')[0];
+            if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = 'block';
+
+            onValue(ref(db, 'users/' + currentUser), (snap) => {
+                const d = snap.val();
+                if(!d) return;
+                document.getElementById('user-balance').innerText = d.balance.toFixed(2);
+                document.getElementById('display-user').innerText = d.username;
+                document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
+                const prof = vips.find(v => v.n == d.vip).r;
+                document.getElementById('daily-profit').innerText = prof.toFixed(2);
+                document.getElementById('btn-task').disabled = (d.vip === 0);
+            });
+            montrePaj('paj-home');
+        }
+
+        window.togglePass = (id, icon) => {
+            const el = document.getElementById(id);
+            if (el.type === "password") {
+                el.type = "text";
+                icon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                el.type = "password";
+                icon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        };
+
+        window.montrePaj = (id, el) => {
+            document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
+            document.getElementById(id).classList.add('aktive');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+        };
+
+        // --- TASKS & ADMIN ---
+        window.voyePeman = async () => {
+            const m = document.getElementById('montant-depot').value;
+            if(m < 20) return alert("Min 20 USDT");
+            await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: parseFloat(m) });
+            alert("Soumis !");
+        };
+
+        window.faireTask = async () => {
+            const uRef = ref(db, 'users/' + currentUser);
+            const snap = await get(uRef);
+            const d = snap.val();
+            const today = new Date().toDateString();
+            if(d.lastTask === today) return alert("Déjà fait !");
+            const profit = vips.find(v => v.n == d.vip).r;
+            await update(uRef, { balance: d.balance + profit, lastTask: today });
+            document.getElementById('task-msg').innerText = "+ " + profit + " USDT ajouté !";
+        };
+
+        window.chajeAdmin = () => {
+            onValue(ref(db, 'depots_pendants'), (snap) => {
+                const cont = document.getElementById('admin-list');
+                cont.innerHTML = "";
+                snap.forEach(child => {
+                    cont.innerHTML += `<div class="card">${child.val().userId} : ${child.val().montant} USDT <button class="btn-main" onclick="valideDepot('${child.key}','${child.val().userId}',${child.val().montant})">Valider</button></div>`;
+                });
+            });
+        };
+
+        window.valideDepot = async (key, uid, m) => {
+            const uRef = ref(db, 'users/' + uid);
+            const snap = await get(uRef);
+            const nouvoBal = snap.val().balance + m;
+            let nvVip = 0;
+            vips.forEach(v => { if(nouvoBal >= v.p) nvVip = v.n; });
+            await update(uRef, { balance: nouvoBal, vip: nvVip });
+            await remove(ref(db, 'depots_pendants/' + key));
+        };
+
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Copié !"); };
+
+        // VIP LIST
+        const vCont = document.getElementById('vip-list');
+        vips.slice(1).forEach(v => {
+            vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between;">
+                <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
+                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px;">Activer</button></div>
+            </div>`;
+        });
+    </script>
+</body>
+</html>
