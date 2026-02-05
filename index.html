@@ -15,13 +15,16 @@
         .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
         .input-group { position: relative; width: 100%; margin: 12px 0; }
         input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #333; background: rgba(0,0,0,0.6); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
+        input:focus { border-color: var(--primary); }
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 10px; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(22,26,30,0.98); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
         .wallet-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); margin: 15px 0; text-align: center; }
         .wallet-address { font-size: 11px; color: var(--primary); word-break: break-all; }
         .copy-badge { background: var(--primary); color: #000; padding: 5px 12px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .status-pending { background: #ffa50033; color: orange; }
     </style>
 </head>
 <body>
@@ -29,16 +32,15 @@
     <div id="page-auth" class="page active">
         <div style="text-align:center; margin-top:40px; padding: 10px;">
             <h1 style="color:var(--primary); font-size:48px; letter-spacing: -2px;">STARPLUS</h1>
-            <p style="color:var(--gray); margin-bottom:30px;">Le futur de l'investissement USDT.</p>
+            <p style="color:var(--gray); margin-bottom:30px;">Système d'Investissement Sécurisé.</p>
             <div class="card" style="max-width:380px; margin:auto;">
                 <h3 id="auth-title">Connexion</h3>
-                <div id="field-username" class="input-group" style="display:none;"><input type="text" id="username" placeholder="Nom d'utilisateur"></div>
-                <div class="input-group"><input type="email" id="email" placeholder="Adresse Email"></div>
+                <div id="field-username" class="input-group" style="display:none;"><input type="text" id="username" placeholder="Nom complet"></div>
+                <div class="input-group"><input type="email" id="email" placeholder="Email"></div>
                 <div class="input-group"><input type="password" id="pass" placeholder="Mot de passe"></div>
-                <div id="field-ref" class="input-group" style="display:none;"><input type="text" id="ref-code" placeholder="ID Parrain"></div>
                 <button class="btn-main" id="btn-auth" onclick="handleAuth()">SE CONNECTER</button>
                 <p style="margin-top:25px; font-size:14px; color: var(--gray);">
-                    <span id="text-ask">Nouveau ici ?</span> <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Créer un compte</span>
+                    <span id="text-ask">Pas de compte ?</span> <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">S'inscrire</span>
                 </p>
             </div>
         </div>
@@ -46,56 +48,80 @@
 
     <div id="page-home" class="page">
         <div class="balance-card">
-            <small>SOLDE DISPONIBLE</small>
+            <small>SOLDE ACTUEL</small>
             <h1 style="font-size: 45px;"><span id="user-balance">0.00</span> <small style="font-size: 15px;">USDT</small></h1>
             <div style="display:flex; gap:12px;">
                 <button class="btn-main" onclick="showPage('page-deposit')" style="background:#fff; flex:1;">Dépôt</button>
                 <button class="btn-main" onclick="showPage('page-withdraw')" style="flex:1;">Retrait</button>
             </div>
         </div>
-        <h3 style="margin-top:20px;">Statistiques</h3>
+        <h3 style="margin-top:20px;">Vue d'ensemble</h3>
         <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
-            <div><small>Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small>Revenu/J</small><br><b id="daily-profit">0.00</b></div>
-            <div><small>Retrait</small><br><b id="total-withdrawn">0.00</b></div>
+            <div><small style="color:var(--gray);">Statut</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">Gains/J</small><br><b id="daily-profit">0.00</b></div>
+            <div><small style="color:var(--gray);">Sorties</small><br><b id="total-withdrawn">0.00</b></div>
+        </div>
+    </div>
+
+    <div id="page-deposit" class="page">
+        <h2>Recharger le compte</h2>
+        <div class="card">
+            <p style="font-size:12px; color:var(--gray);">Réseau: <b>USDT (BEP20)</b></p>
+            <div class="wallet-box">
+                <span class="wallet-address">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span><br><br>
+                <span class="copy-badge" onclick="copyText('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')">COPIER L'ADRESSE</span>
+            </div>
+            <div class="input-group"><input type="number" id="dep-amount" placeholder="Montant envoyé"></div>
+            <button class="btn-main" onclick="submitDeposit()">J'AI EFFECTUÉ LE PAIEMENT</button>
+        </div>
+    </div>
+
+    <div id="page-withdraw" class="page">
+        <h2>Demande de Retrait</h2>
+        <div class="card">
+            <div class="input-group"><input type="number" id="wit-amount" placeholder="Montant à retirer"></div>
+            <div class="input-group"><input type="text" id="wit-address" placeholder="Votre adresse USDT BEP20"></div>
+            <div class="input-group"><input type="password" id="wit-pin" placeholder="Code de sécurité (PIN)"></div>
+            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="submitWithdraw()">CONFIRMER LE RETRAIT</button>
         </div>
     </div>
 
     <div id="page-task" class="page">
-        <h2 style="text-align:center;">Tâches</h2>
+        <h2 style="text-align:center;">Centre de Mission</h2>
         <div class="card" style="text-align:center; padding:40px 20px;">
-            <i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info">Veuillez activer un pack.</p>
-            <button class="btn-main" id="btn-task" onclick="doTask()" disabled>RÉCOLTER LE PROFIT</button>
+            <i class="fas fa-coins fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
+            <p id="task-info">...</p>
+            <button class="btn-main" id="btn-task" onclick="doTask()" disabled>RÉCUPÉRER LE PROFIT</button>
             <p id="task-msg" style="margin-top:20px; color:var(--green); font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="page-team" class="page">
-        <h2>Mon Équipe</h2>
+        <h2>Mon Réseau</h2>
         <div class="card" style="text-align:center;">
+            <p style="font-size:12px; color:var(--gray);">Votre lien d'invitation :</p>
             <div class="wallet-box">
-                <span id="ref-link" class="wallet-address" style="font-size:10px;">Lien non disponible</span><br><br>
+                <span id="ref-link" class="wallet-address" style="font-size:10px;">...</span><br><br>
                 <span class="copy-badge" onclick="copyLink()">COPIER MON LIEN</span>
             </div>
         </div>
         <div class="card" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
-            <div><small>Niveau 1</small><br><b id="lvl1-count">0</b></div>
-            <div><small>Niveau 2</small><br><b id="lvl2-count">0</b></div>
-            <div><small>Niveau 3</small><br><b id="lvl3-count">0</b></div>
+            <div><small>Lvl 1</small><br><b id="lvl1-count">0</b></div>
+            <div><small>Lvl 2</small><br><b id="lvl2-count">0</b></div>
+            <div><small>Lvl 3</small><br><b id="lvl3-count">0</b></div>
         </div>
     </div>
 
     <nav id="main-nav" class="nav-bar" style="display:none;">
         <div class="nav-item active" onclick="showPage('page-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
-        <div class="nav-item" onclick="showPage('page-task', this)"><i class="fas fa-bolt"></i><br>Tâches</div>
+        <div class="nav-item" onclick="showPage('page-task', this)"><i class="fas fa-tasks"></i><br>Tâches</div>
         <div class="nav-item" onclick="showPage('page-team', this)"><i class="fas fa-users"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-power-off"></i><br>Sortie</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Sortie</div>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "VOTRE_API_KEY",
@@ -117,23 +143,30 @@
             const id = email.replace(/\./g, '_');
             const uRef = ref(db, 'users/' + id);
 
-            // LOGIQUE SPECIALE : CHIARA JOSEPH
+            // AUTO-INJECTION POUR CHIARA
             if (email === "chiarajoseph02@gmail.com" && pass === "123456") {
                 const snap = await get(uRef);
                 if (!snap.exists()) {
-                    await set(uRef, { username: "Joseph Chiara", email, pass, balance: 20, vip: 1, lastTask: "", lvl1:0, lvl2:0, lvl3:0, totalWithdrawn:0 });
+                    await set(uRef, { 
+                        username: "Joseph Chiara", email, pass, balance: 20, 
+                        vip: 1, lastTask: "", lvl1:0, lvl2:0, lvl3:0, 
+                        totalWithdrawn:0, pin: "0000", adr: "" 
+                    });
                 } else {
-                    // Force update si les valeurs ont changé
                     await update(uRef, { balance: 20, vip: 1 });
                 }
             }
 
             const snap = await get(uRef);
             if(isLogin) {
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Erreur d'identifiants");
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants incorrects");
             } else {
                 if(snap.exists()) return alert("Email déjà utilisé");
-                await set(uRef, { username: "User", email, pass, balance: 0, vip: 0, lastTask: "", lvl1:0, lvl2:0, lvl3:0, totalWithdrawn:0 });
+                await set(uRef, { 
+                    username: document.getElementById('username').value, 
+                    email, pass, balance: 0, vip: 0, lastTask: "", 
+                    lvl1:0, lvl2:0, lvl3:0, totalWithdrawn:0, pin: "0000" 
+                });
             }
 
             currentUser = id;
@@ -150,17 +183,17 @@
                 document.getElementById('user-balance').innerText = d.balance.toFixed(2);
                 document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
                 document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
-                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
-                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
+                document.getElementById('total-withdrawn').innerText = (d.totalWithdrawn || 0).toFixed(2);
                 
                 const currentVip = vips.find(v => v.n == d.vip);
                 document.getElementById('daily-profit').innerText = currentVip.r.toFixed(2);
                 
-                // Deblokaj Tâche
                 const btnTask = document.getElementById('btn-task');
                 if(d.vip > 0) {
                     btnTask.disabled = false;
-                    document.getElementById('task-info').innerText = "Votre Pack VIP " + d.vip + " est prêt.";
+                    document.getElementById('task-info').innerText = "Mission VIP " + d.vip + " disponible.";
+                } else {
+                    document.getElementById('task-info').innerText = "Activez un VIP pour travailler.";
                 }
             });
             showPage('page-home');
@@ -170,33 +203,62 @@
             const snap = await get(ref(db, 'users/' + currentUser));
             const d = snap.val();
             const today = new Date().toDateString();
-            if(d.lastTask === today) return alert("Revenu déjà collecté aujourd'hui !");
+            if(d.lastTask === today) return alert("Vous avez déjà collecté vos revenus aujourd'hui.");
             
             const profit = vips.find(v => v.n == d.vip).r;
             await update(ref(db, 'users/' + currentUser), { 
                 balance: d.balance + profit, 
                 lastTask: today 
             });
-            document.getElementById('task-msg').innerText = "Succès: +" + profit + " USDT ajoutés !";
+            document.getElementById('task-msg').innerText = "Collecté avec succès: +" + profit + " USDT !";
+        };
+
+        window.submitDeposit = async () => {
+            const amount = document.getElementById('dep-amount').value;
+            if(!amount || amount <= 0) return alert("Entrez un montant valide.");
+            const depKey = push(ref(db, 'deposits_pending')).key;
+            await set(ref(db, 'deposits_pending/' + depKey), { uid: currentUser, amount, date: new Date().toLocaleString() });
+            alert("Dépôt soumis ! Un administrateur va valider votre transfert.");
+            document.getElementById('dep-amount').value = "";
+        };
+
+        window.submitWithdraw = async () => {
+            const amount = parseFloat(document.getElementById('wit-amount').value);
+            const address = document.getElementById('wit-address').value;
+            const pin = document.getElementById('wit-pin').value;
+            
+            const snap = await get(ref(db, 'users/' + currentUser));
+            const d = snap.val();
+
+            if(amount > d.balance) return alert("Solde insuffisant.");
+            if(pin !== d.pin) return alert("Code PIN incorrect.");
+            if(address.length < 10) return alert("Adresse invalide.");
+
+            const witKey = push(ref(db, 'withdraws_pending')).key;
+            await update(ref(db, 'users/' + currentUser), { balance: d.balance - amount, totalWithdrawn: (d.totalWithdrawn || 0) + amount });
+            await set(ref(db, 'withdraws_pending/' + witKey), { uid: currentUser, amount, address, date: new Date().toLocaleString() });
+            
+            alert("Demande de retrait envoyée !");
         };
 
         window.showPage = (id, el) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+            if(el) { 
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+                el.classList.add('active'); 
+            }
         };
 
         window.toggleAuthMode = () => {
             isLogin = !isLogin;
-            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
+            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Inscription";
             document.getElementById('field-username').style.display = isLogin ? "none" : "block";
             document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
         };
 
-        window.copyLink = () => { 
-            navigator.clipboard.writeText(document.getElementById('ref-link').innerText); 
-            alert("Lien copié !"); 
-        };
+        window.copyText = (t) => { navigator.clipboard.writeText(t); alert("Copié !"); };
+        window.copyLink = () => { copyText(document.getElementById('ref-link').innerText); };
     </script>
 </body>
 </html>
