@@ -102,4 +102,222 @@
             <div class="input-group">
                 <input type="number" id="montant-depot" placeholder="Montant déposé (USDT)">
             </div>
+            <button class="btn-main" onclick="voyePeman()">J'AI EFFECTUÉ LE PAIEMENT</button>
+            <p style="font-size: 11px; color: var(--gray); margin-top: 15px;">Le crédit sera ajouté après confirmation de l'administrateur.</p>
+        </div>
+    </div>
+
+    <div id="paj-retrait" class="paj">
+        <h2>Effectuer un retrait</h2>
+        <div class="card">
+            <div style="text-align:center; margin-bottom: 20px;">
+                <small style="color:var(--gray);">Disponible pour retrait</small>
+                <h2 id="ret-balance" style="color:var(--primary); margin: 5px 0;">0.00 USDT</h2>
+            </div>
             
+            <label style="font-size:12px; color:var(--gray);">Montant à retirer</label>
+            <div class="input-group">
+                <input type="number" id="ret-montant" placeholder="Ex: 50">
+            </div>
+
+            <label style="font-size:12px; color:var(--gray);">Votre adresse USDT (BEP20)</label>
+            <div class="input-group">
+                <input type="text" id="ret-adr" placeholder="Collez votre adresse ici">
+            </div>
+            
+            <button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">CONFIRMER LE RETRAIT</button>
+        </div>
+    </div>
+
+    <div id="paj-ekip" class="paj">
+        <h2>Mon Équipe</h2>
+        <div class="card" style="text-align:center;">
+            <p style="color:var(--gray); font-size: 13px;">Gagnez sur 3 niveaux (10%, 5%, 2%)</p>
+            <div class="wallet-box">
+                <span id="ref-link" class="wallet-address">...</span>
+                <span class="copy-badge" onclick="copyLink()"><i class="fas fa-copy"></i> Copier mon lien</span>
+            </div>
+        </div>
+        <div class="card">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:center;">
+                <div><small>Lvl 1</small><br><b id="lvl1-count">0</b></div>
+                <div><small>Lvl 2</small><br><b id="lvl2-count">0</b></div>
+                <div><small>Lvl 3</small><br><b id="lvl3-count">0</b></div>
+            </div>
+            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+            <div style="display:flex; justify-content:space-between;">
+                <span>Total Commissions:</span>
+                <b id="total-comm" style="color:var(--primary);">0.00 USDT</b>
+            </div>
+        </div>
+    </div>
+
+    <div id="paj-vip" class="paj"><h2>Packs VIP</h2><div id="vip-list"></div></div>
+    <div id="paj-task" class="paj"><h2>Tâches</h2><div class="card" style="text-align:center; padding:40px 20px;"><i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i><p id="task-info">Veuillez activer un pack.</p><button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button><p id="task-msg" style="margin-top:20px; color:var(--green);"></p></div></div>
+    <div id="paj-admin" class="paj"><h2>Admin Panel</h2><div id="admin-list"></div><button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button></div>
+
+    <nav id="main-nav" class="nav-bar" style="display:none;">
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
+        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
+        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-bolt"></i><br>Tâches</div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Sortir</div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "API_KEY",
+            authDomain: "starplus-47411.firebaseapp.com",
+            databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
+            projectId: "starplus-47411",
+            storageBucket: "starplus-47411.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let currentUser = null;
+        let isLogin = false;
+
+        const vips = [
+            {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
+            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
+        ];
+
+        window.copyToClipboard = (text) => {
+            navigator.clipboard.writeText(text);
+            alert("Adresse copiée dans le presse-papier !");
+        };
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const pass = document.getElementById('pass').value.trim();
+            const user = document.getElementById('username').value.trim();
+            const refID = document.getElementById('ref-code').value.trim();
+            
+            if(!email || !pass) return alert("Remplissez les champs !");
+            const id = email.replace(/\./g, '_');
+            const uRef = ref(db, 'users/' + id);
+
+            if(!isLogin) {
+                const check = await get(uRef);
+                if(check.exists()) return alert("Email déjà utilisé.");
+                await set(uRef, { 
+                    username: user, email, pass, balance: 0, vip: 0, lastTask: "", 
+                    referredBy: refID ? refID.replace(/\./g, '_') : null,
+                    commissions: 0, lvl1: 0, lvl2: 0, lvl3: 0
+                });
+                if(refID) await updateTeam(refID.replace(/\./g, '_'), 1);
+                alert("Compte créé !");
+            } else {
+                const snap = await get(uRef);
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Email ou mot de passe incorrect.");
+            }
+            currentUser = id;
+            initApp(email);
+        };
+
+        async function updateTeam(parentID, depth) {
+            if(!parentID || depth > 3) return;
+            const pRef = ref(db, 'users/' + parentID);
+            const snap = await get(pRef);
+            if(snap.exists()) {
+                let d = snap.val();
+                if(depth === 1) await update(pRef, { lvl1: (d.lvl1 || 0) + 1 });
+                if(depth === 2) await update(pRef, { lvl2: (d.lvl2 || 0) + 1 });
+                if(depth === 3) await update(pRef, { lvl3: (d.lvl3 || 0) + 1 });
+                if(d.referredBy) await updateTeam(d.referredBy, depth + 1);
+            }
+        }
+
+        function initApp(email) {
+            document.getElementById('paj-auth').style.display = 'none';
+            document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('ref-link').innerText = window.location.origin + window.location.pathname + "?ref=" + email;
+            document.getElementById('display-id').innerText = email;
+
+            onValue(ref(db, 'users/' + currentUser), (snap) => {
+                const d = snap.val();
+                document.getElementById('user-balance').innerText = d.balance.toFixed(2);
+                document.getElementById('ret-balance').innerText = d.balance.toFixed(2) + " USDT";
+                document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
+                document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
+                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
+                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
+                document.getElementById('total-comm').innerText = (d.commissions || 0).toFixed(2) + " USDT";
+                const prof = vips.find(v => v.n == d.vip).r;
+                document.getElementById('daily-profit').innerText = prof.toFixed(2);
+                document.getElementById('btn-task').disabled = (d.vip === 0);
+            });
+            montrePaj('paj-home');
+        }
+
+        window.voyePeman = async () => {
+            const m = document.getElementById('montant-depot').value;
+            if(m < 20) return alert("Minimum 20 USDT");
+            await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: parseFloat(m) });
+            alert("Soumis ! Attendez la validation.");
+        };
+
+        window.voyeRetrait = async () => {
+            const m = parseFloat(document.getElementById('ret-montant').value);
+            const adr = document.getElementById('ret-adr').value.trim();
+            if(!m || m < 10) return alert("Minimum retrait: 10 USDT");
+            if(adr.length < 10) return alert("Adresse invalide !");
+            
+            const uRef = ref(db, 'users/' + currentUser);
+            const snap = await get(uRef);
+            if(snap.val().balance < m) return alert("Solde insuffisant !");
+            
+            await update(uRef, { balance: snap.val().balance - m });
+            await push(ref(db, 'retraits_pendants'), { userId: currentUser, montant: m, adresse: adr });
+            alert("Demande de retrait envoyée !");
+        };
+
+        window.faireTask = async () => {
+            const uRef = ref(db, 'users/' + currentUser);
+            const snap = await get(uRef);
+            const today = new Date().toDateString();
+            if(snap.val().lastTask === today) return alert("Déjà fait !");
+            const profit = vips.find(v => v.n == snap.val().vip).r;
+            await update(uRef, { balance: snap.val().balance + profit, lastTask: today });
+            document.getElementById('task-msg').innerText = "+" + profit + " USDT ajouté !";
+        };
+
+        window.montrePaj = (id, el) => {
+            document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
+            document.getElementById(id).classList.add('aktive');
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+        };
+
+        window.toggleAuthMode = () => {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
+            document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
+            document.getElementById('field-username').style.display = isLogin ? "none" : "block";
+            document.getElementById('field-confirm').style.display = isLogin ? "none" : "block";
+            document.getElementById('field-ref').style.display = isLogin ? "none" : "block";
+        };
+
+        window.togglePass = (id, icon) => {
+            const el = document.getElementById(id);
+            el.type = el.type === "password" ? "text" : "password";
+            icon.classList.toggle('fa-eye-slash');
+        };
+
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
+
+        const vCont = document.getElementById('vip-list');
+        vips.slice(1).forEach(v => {
+            vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between;">
+                <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
+                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px; font-weight:bold;">Acheter</button></div>
+            </div>`;
+        });
+    </script>
+</body>
+</html>
