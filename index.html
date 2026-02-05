@@ -29,8 +29,7 @@
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
         .nav-item.active { color: var(--primary); }
 
-        /* Wallet Display Style */
-        .wallet-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); margin: 15px 0; position: relative; }
+        .wallet-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); margin: 15px 0; }
         .wallet-address { font-size: 11px; color: var(--primary); word-break: break-all; margin-bottom: 10px; display: block; }
         .copy-badge { background: var(--primary); color: #000; padding: 5px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
@@ -72,96 +71,80 @@
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small>Solde USDT</small>
+            <small>Solde Actuel (USDT)</small>
             <h1 style="font-size: 45px;"><span id="user-balance">0.00</span></h1>
             <div style="display:flex; gap:12px; margin-top:20px;">
                 <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff; flex:1;">Dépôt</button>
                 <button class="btn-main" onclick="montrePaj('paj-retrait')" style="flex:1;">Retrait</button>
             </div>
         </div>
-        <div id="admin-shortcut" style="display:none; margin-top:15px;"><button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button></div>
-        <h3 style="margin-top:25px;">Statistiques</h3>
+        <div id="admin-shortcut" style="display:none; margin-top:15px;">
+            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button>
+        </div>
+        <h3 style="margin-top:25px;">Tableau de Bord</h3>
         <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
             <div><small>Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small>Email</small><br><b id="display-id" style="font-size: 10px;">...</b></div>
+            <div><small>ID</small><br><b id="display-id" style="font-size: 10px;">...</b></div>
             <div><small>Revenu/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
     </div>
 
     <div id="paj-depot" class="paj">
-        <h2>Recharger mon compte</h2>
+        <h2>Déposer des USDT</h2>
         <div class="card" style="text-align:center;">
-            <p style="font-size: 13px; color: var(--gray);">Réseau: <b>USDT BEP20</b></p>
+            <p style="font-size: 12px; color: var(--gray);">Envoyez uniquement du <b>USDT BEP20</b></p>
             <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;">
             
             <div class="wallet-box">
-                <span class="wallet-address" id="company-wallet">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
-                <span class="copy-badge" onclick="copyToClipboard('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')"><i class="fas fa-copy"></i> Copier l'adresse</span>
+                <span class="wallet-address">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
+                <span class="copy-badge" onclick="copyToClipboard('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')">COPIER L'ADRESSE</span>
             </div>
 
-            <div class="input-group">
-                <input type="number" id="montant-depot" placeholder="Montant déposé (USDT)">
-            </div>
-            <button class="btn-main" onclick="voyePeman()">J'AI EFFECTUÉ LE PAIEMENT</button>
-            <p style="font-size: 11px; color: var(--gray); margin-top: 15px;">Le crédit sera ajouté après confirmation de l'administrateur.</p>
+            <input type="number" id="montant-depot" placeholder="Montant (USDT)" style="margin-bottom:10px;">
+            <input type="text" id="txn-id" placeholder="ID de Transaction (TXID/Hash)">
+            <button class="btn-main" onclick="voyePeman()">SOUMETTRE LE DÉPÔT</button>
         </div>
     </div>
 
     <div id="paj-retrait" class="paj">
-        <h2>Effectuer un retrait</h2>
+        <h2>Retirer vos gains</h2>
         <div class="card">
-            <div style="text-align:center; margin-bottom: 20px;">
-                <small style="color:var(--gray);">Disponible pour retrait</small>
-                <h2 id="ret-balance" style="color:var(--primary); margin: 5px 0;">0.00 USDT</h2>
-            </div>
-            
-            <label style="font-size:12px; color:var(--gray);">Montant à retirer</label>
-            <div class="input-group">
-                <input type="number" id="ret-montant" placeholder="Ex: 50">
-            </div>
-
-            <label style="font-size:12px; color:var(--gray);">Votre adresse USDT (BEP20)</label>
-            <div class="input-group">
-                <input type="text" id="ret-adr" placeholder="Collez votre adresse ici">
-            </div>
-            
-            <button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">CONFIRMER LE RETRAIT</button>
+            <input type="number" id="ret-montant" placeholder="Montant à retirer">
+            <input type="text" id="ret-adr" placeholder="Votre adresse USDT BEP20">
+            <p style="font-size:11px; color:var(--gray); margin: 10px 0;">Frais de retrait: 0% | Minimum: 10 USDT</p>
+            <button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">DEMANDER LE RETRAIT</button>
         </div>
+    </div>
+
+    <div id="paj-admin" class="paj">
+        <h2>Panel Administratif</h2>
+        <div id="admin-list"></div>
+        <button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR ACCUEIL</button>
     </div>
 
     <div id="paj-ekip" class="paj">
         <h2>Mon Équipe</h2>
         <div class="card" style="text-align:center;">
-            <p style="color:var(--gray); font-size: 13px;">Gagnez sur 3 niveaux (10%, 5%, 2%)</p>
             <div class="wallet-box">
-                <span id="ref-link" class="wallet-address">...</span>
-                <span class="copy-badge" onclick="copyLink()"><i class="fas fa-copy"></i> Copier mon lien</span>
+                <span id="ref-link" class="wallet-address">Lien de parrainage...</span>
+                <span class="copy-badge" onclick="copyLink()">COPIER MON LIEN</span>
             </div>
-        </div>
-        <div class="card">
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:center;">
-                <div><small>Lvl 1</small><br><b id="lvl1-count">0</b></div>
-                <div><small>Lvl 2</small><br><b id="lvl2-count">0</b></div>
-                <div><small>Lvl 3</small><br><b id="lvl3-count">0</b></div>
-            </div>
-            <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-            <div style="display:flex; justify-content:space-between;">
-                <span>Total Commissions:</span>
-                <b id="total-comm" style="color:var(--primary);">0.00 USDT</b>
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <span>Lvl 1: <b id="lvl1-count">0</b></span>
+                <span>Lvl 2: <b id="lvl2-count">0</b></span>
+                <span>Lvl 3: <b id="lvl3-count">0</b></span>
             </div>
         </div>
     </div>
-
     <div id="paj-vip" class="paj"><h2>Packs VIP</h2><div id="vip-list"></div></div>
-    <div id="paj-task" class="paj"><h2>Tâches</h2><div class="card" style="text-align:center; padding:40px 20px;"><i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i><p id="task-info">Veuillez activer un pack.</p><button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button><p id="task-msg" style="margin-top:20px; color:var(--green);"></p></div></div>
-    <div id="paj-admin" class="paj"><h2>Admin Panel</h2><div id="admin-list"></div><button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button></div>
+    <div id="paj-task" class="paj"><h2>Tâches Quotidiennes</h2><div class="card" style="text-align:center; padding:40px 20px;"><i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i><p id="task-info">Prêt pour la récolte ?</p><button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER MAINTENANT</button><p id="task-msg" style="margin-top:20px; color:var(--green);"></p></div></div>
 
     <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
+        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Home</div>
         <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-bolt"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Sortir</div>
+        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-bolt"></i><br>Task</div>
+        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Team</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Exit</div>
     </nav>
 
     <script type="module">
@@ -190,49 +173,37 @@
 
         window.copyToClipboard = (text) => {
             navigator.clipboard.writeText(text);
-            alert("Adresse copiée dans le presse-papier !");
+            alert("Adresse copiée !");
         };
 
+        // --- AUTH ---
         window.handleAuth = async () => {
             const email = document.getElementById('email').value.trim().toLowerCase();
             const pass = document.getElementById('pass').value.trim();
             const user = document.getElementById('username').value.trim();
             const refID = document.getElementById('ref-code').value.trim();
             
-            if(!email || !pass) return alert("Remplissez les champs !");
+            if(!email || !pass) return alert("Champs vides !");
             const id = email.replace(/\./g, '_');
             const uRef = ref(db, 'users/' + id);
 
             if(!isLogin) {
                 const check = await get(uRef);
-                if(check.exists()) return alert("Email déjà utilisé.");
+                if(check.exists()) return alert("Email utilisé.");
                 await set(uRef, { 
                     username: user, email, pass, balance: 0, vip: 0, lastTask: "", 
                     referredBy: refID ? refID.replace(/\./g, '_') : null,
                     commissions: 0, lvl1: 0, lvl2: 0, lvl3: 0
                 });
-                if(refID) await updateTeam(refID.replace(/\./g, '_'), 1);
-                alert("Compte créé !");
+                alert("Bienvenue !");
             } else {
                 const snap = await get(uRef);
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Email ou mot de passe incorrect.");
+                if(!snap.exists() || snap.val().pass !== pass) return alert("Erreur connexion.");
             }
             currentUser = id;
+            if(email === "admin@starplus.com") document.getElementById('admin-shortcut').style.display = 'block';
             initApp(email);
         };
-
-        async function updateTeam(parentID, depth) {
-            if(!parentID || depth > 3) return;
-            const pRef = ref(db, 'users/' + parentID);
-            const snap = await get(pRef);
-            if(snap.exists()) {
-                let d = snap.val();
-                if(depth === 1) await update(pRef, { lvl1: (d.lvl1 || 0) + 1 });
-                if(depth === 2) await update(pRef, { lvl2: (d.lvl2 || 0) + 1 });
-                if(depth === 3) await update(pRef, { lvl3: (d.lvl3 || 0) + 1 });
-                if(d.referredBy) await updateTeam(d.referredBy, depth + 1);
-            }
-        }
 
         function initApp(email) {
             document.getElementById('paj-auth').style.display = 'none';
@@ -243,12 +214,7 @@
             onValue(ref(db, 'users/' + currentUser), (snap) => {
                 const d = snap.val();
                 document.getElementById('user-balance').innerText = d.balance.toFixed(2);
-                document.getElementById('ret-balance').innerText = d.balance.toFixed(2) + " USDT";
                 document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
-                document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
-                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
-                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
-                document.getElementById('total-comm').innerText = (d.commissions || 0).toFixed(2) + " USDT";
                 const prof = vips.find(v => v.n == d.vip).r;
                 document.getElementById('daily-profit').innerText = prof.toFixed(2);
                 document.getElementById('btn-task').disabled = (d.vip === 0);
@@ -256,36 +222,70 @@
             montrePaj('paj-home');
         }
 
+        // --- DEPOSIT & ADMIN VALIDATION ---
         window.voyePeman = async () => {
-            const m = document.getElementById('montant-depot').value;
-            if(m < 20) return alert("Minimum 20 USDT");
-            await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: parseFloat(m) });
-            alert("Soumis ! Attendez la validation.");
+            const m = parseFloat(document.getElementById('montant-depot').value);
+            const txn = document.getElementById('txn-id').value.trim();
+            if(m < 20 || txn === "") return alert("Min 20 USDT + Hash Requis");
+            
+            await push(ref(db, 'depots_pendants'), { 
+                userId: currentUser, 
+                montant: m, 
+                hash: txn,
+                time: new Date().toLocaleString()
+            });
+            alert("Dépôt envoyé à l'admin pour validation !");
+        };
+
+        window.chajeAdmin = () => {
+            onValue(ref(db, 'depots_pendants'), (snap) => {
+                const cont = document.getElementById('admin-list');
+                cont.innerHTML = "";
+                snap.forEach(child => {
+                    const data = child.val();
+                    cont.innerHTML += `<div class="card">
+                        <b>User:</b> ${data.userId}<br>
+                        <b>Montant:</b> ${data.montant} USDT<br>
+                        <b>Hash:</b> <small>${data.hash}</small><br>
+                        <button class="btn-main" onclick="valideDepot('${child.key}','${data.userId}',${data.montant})">APPROUVER</button>
+                    </div>`;
+                });
+            });
+        };
+
+        window.valideDepot = async (key, uid, m) => {
+            const uRef = ref(db, 'users/' + uid);
+            const snap = await get(uRef);
+            const data = snap.val();
+            
+            const nouvoBal = data.balance + m;
+            let nvVip = 0;
+            vips.forEach(v => { if(nouvoBal >= v.p) nvVip = v.n; });
+            
+            await update(uRef, { balance: nouvoBal, vip: nvVip });
+            await remove(ref(db, 'depots_pendants/' + key));
+            alert("Dépôt validé !");
         };
 
         window.voyeRetrait = async () => {
             const m = parseFloat(document.getElementById('ret-montant').value);
             const adr = document.getElementById('ret-adr').value.trim();
-            if(!m || m < 10) return alert("Minimum retrait: 10 USDT");
-            if(adr.length < 10) return alert("Adresse invalide !");
+            const snap = await get(ref(db, 'users/' + currentUser));
+            if(m > snap.val().balance || m < 10) return alert("Solde insuffisant ou Min 10 USDT");
             
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            if(snap.val().balance < m) return alert("Solde insuffisant !");
-            
-            await update(uRef, { balance: snap.val().balance - m });
+            await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - m });
             await push(ref(db, 'retraits_pendants'), { userId: currentUser, montant: m, adresse: adr });
-            alert("Demande de retrait envoyée !");
+            alert("Retrait en attente de traitement.");
         };
 
         window.faireTask = async () => {
             const uRef = ref(db, 'users/' + currentUser);
             const snap = await get(uRef);
             const today = new Date().toDateString();
-            if(snap.val().lastTask === today) return alert("Déjà fait !");
+            if(snap.val().lastTask === today) return alert("Déjà fait aujourd'hui !");
             const profit = vips.find(v => v.n == snap.val().vip).r;
             await update(uRef, { balance: snap.val().balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = "+" + profit + " USDT ajouté !";
+            document.getElementById('task-msg').innerText = "Succès: +" + profit + " USDT !";
         };
 
         window.montrePaj = (id, el) => {
@@ -299,8 +299,6 @@
             document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
             document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
             document.getElementById('field-username').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-confirm').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-ref').style.display = isLogin ? "none" : "block";
         };
 
         window.togglePass = (id, icon) => {
@@ -309,13 +307,12 @@
             icon.classList.toggle('fa-eye-slash');
         };
 
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
-
+        // Render VIPs
         const vCont = document.getElementById('vip-list');
         vips.slice(1).forEach(v => {
-            vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between;">
+            vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
                 <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
-                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px; font-weight:bold;">Acheter</button></div>
+                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px 10px; border-radius:5px; margin-top:5px; font-weight:bold; font-size:10px;">UPGRADE</button></div>
             </div>`;
         });
     </script>
