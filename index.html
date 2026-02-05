@@ -9,33 +9,27 @@
         :root { --primary: #c0ff00; --bg: #0b0d10; --card: #161a1e; --text: #ffffff; --green: #00ff88; --red: #ff4757; --gray: #888; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* --- ANIMASYON AK PAJ --- */
         .paj { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .paj.aktive { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- UI ELEMENTS --- */
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
-        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; position: relative; }
+        .card { background: var(--card); border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #2d2d2d; box-shadow: 0 4px 25px rgba(0,0,0,0.5); }
+        .balance-card { background: linear-gradient(135deg, #1d2b00, #0b0d10); border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
         
-        /* Input Group Modèn */
-        .input-group { position: relative; width: 100%; margin: 12px 0; }
+        .input-group { position: relative; width: 100%; margin: 15px 0; }
         input { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid #333; background: rgba(0,0,0,0.6); color: #fff; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(192, 255, 0, 0.15); }
-        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); cursor: pointer; padding: 5px; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(192, 255, 0, 0.1); }
+        .input-group i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gray); cursor: pointer; padding: 5px; z-index: 10; }
 
         .btn-main { width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: #000; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 10px; }
-        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
-        .btn-main:active { transform: scale(0.98); }
+        .btn-main:active { transform: scale(0.97); }
 
-        /* --- NAV BAR --- */
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(22,26,30,0.98); backdrop-filter: blur(15px); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d2d2d; z-index: 1000; }
-        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; }
+        .nav-item { color: #666; text-align: center; font-size: 11px; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
 
-        /* --- STATUS AK LIST --- */
-        .status { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
         .status.ok { background: rgba(0,255,136,0.1); color: var(--green); }
         .tranzaksyon { font-size: 13px; padding: 12px 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
     </style>
@@ -43,51 +37,58 @@
 <body>
 
     <div id="paj-auth" class="paj aktive">
-        <div style="text-align:center; margin-top:40px; padding: 20px;">
-            <h1 style="color:var(--primary); font-size:48px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
-            <p style="color:var(--gray); margin-bottom:35px; font-size: 14px;">Votre porte d'entrée vers la liberté financière.</p>
+        <div style="text-align:center; margin-top:40px; padding: 15px;">
+            <h1 style="color:var(--primary); font-size:50px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
+            <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">L'avenir de l'investissement commence ici.</p>
             
             <div class="card" style="width:100%; max-width:400px; margin:auto;">
-                <h3 id="auth-title" style="margin-bottom: 25px; font-size: 22px;">Créer un compte</h3>
+                <h3 id="auth-title" style="margin-bottom: 25px; font-size: 24px;">Créer un compte</h3>
                 
-                <div id="signup-only">
+                <div id="form-signup">
                     <div class="input-group">
-                        <input type="text" id="username" placeholder="Nom d'utilisateur">
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <input type="email" id="email" placeholder="Adresse Email">
-                </div>
-
-                <div class="input-group">
-                    <input type="password" id="pass" placeholder="Mot de passe">
-                    <i class="fas fa-eye" onclick="togglePass('pass', this)"></i>
-                </div>
-
-                <div id="signup-only-confirm">
-                    <div class="input-group">
-                        <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
-                        <i class="fas fa-eye" onclick="togglePass('pass-confirm', this)"></i>
+                        <input type="text" id="reg-username" placeholder="Nom d'utilisateur">
                     </div>
                     <div class="input-group">
-                        <input type="text" id="ref-code" placeholder="Code d'invitation (Optionnel)">
+                        <input type="email" id="reg-email" placeholder="Adresse Email">
                     </div>
+                    <div class="input-group">
+                        <input type="password" id="reg-pass" placeholder="Mot de passe">
+                        <i class="fas fa-eye" onclick="togglePass('reg-pass', this)"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="reg-confirm" placeholder="Confirmer mot de passe">
+                        <i class="fas fa-eye" onclick="togglePass('reg-confirm', this)"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="reg-ref" placeholder="Code d'invitation (Optionnel)">
+                    </div>
+                    <button class="btn-main" onclick="handleSignup()">S'INSCRIRE</button>
+                    <p style="margin-top:20px; font-size:14px; color: var(--gray);">
+                        Déjà inscrit ? <span onclick="switchToConnexion()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Se connecter</span>
+                    </p>
                 </div>
 
-                <button class="btn-main" id="btn-auth" onclick="handleAuth()">S'INSCRIRE</button>
-                
-                <p id="toggle-text" style="margin-top:25px; font-size:14px; color: var(--gray);">
-                    Déjà un membre ? <span id="toggle-auth" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Se connecter</span>
-                </p>
+                <div id="form-login" style="display:none;">
+                    <div class="input-group">
+                        <input type="email" id="login-email" placeholder="Adresse Email">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="login-pass" placeholder="Mot de passe">
+                        <i class="fas fa-eye" onclick="togglePass('login-pass', this)"></i>
+                    </div>
+                    <button class="btn-main" onclick="handleLogin()">SE CONNECTER</button>
+                    <p style="margin-top:20px; font-size:14px; color: var(--gray);">
+                        Pas encore de compte ? <span onclick="switchToSignup()" style="color:var(--primary); cursor:pointer; font-weight:bold;">S'inscrire</span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px; font-weight:600;">Solde Total (USDT)</small>
-            <h1 style="font-size: 45px; margin: 12px 0;"><span id="user-balance">0.00</span></h1>
+            <small style="color:var(--gray); text-transform:uppercase; letter-spacing:1px; font-weight:600;">Solde Disponible</small>
+            <h1 style="font-size: 45px; margin: 12px 0;"><span id="user-balance">0.00</span> <span style="font-size:18px; color:var(--primary);">USDT</span></h1>
             <div style="display:flex; gap:12px; margin-top:20px;">
                 <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff; flex:1;">Dépôt</button>
                 <button class="btn-main" onclick="montrePaj('paj-retrait')" style="flex:1;">Retrait</button>
@@ -98,83 +99,33 @@
             <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMINISTRATION</button>
         </div>
 
-        <h3 style="margin-top:30px;">Résumé du compte</h3>
-        <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 20px;">
-            <div><small style="color:var(--gray);">Statut</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small style="color:var(--gray);">ID</small><br><b id="display-user">...</b></div>
-            <div><small style="color:var(--gray);">Profit/J</small><br><b id="daily-profit">0.00</b></div>
+        <h3 style="margin-top:30px;">Statut du Compte</h3>
+        <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
+            <div><small style="color:var(--gray);">Niveau</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small style="color:var(--gray);">Membre</small><br><b id="display-user">...</b></div>
+            <div><small style="color:var(--gray);">Gain/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
 
-        <h3>Activités récentes</h3>
+        <h3>Activités Récentes</h3>
         <div class="card" id="history-list">
-            <div class="tranzaksyon"><span>Système activé</span><span class="status ok">PRÊT</span></div>
+            <div class="tranzaksyon"><span>Système Starplus prêt</span><span class="status ok">OK</span></div>
         </div>
     </div>
 
-    <div id="paj-vip" class="paj"><h2 style="text-align:center; color:var(--primary);">Packs d'Investissement</h2><div id="vip-list"></div></div>
-    
+    <div id="paj-vip" class="paj">
+        <h2 style="text-align:center; color:var(--primary);">Packs VIP</h2>
+        <div id="vip-list"></div>
+    </div>
+
     <div id="paj-task" class="paj">
-        <h2 style="text-align:center;">Centre de Tâches</h2>
-        <div class="card" style="text-align:center; padding:50px 20px;">
-            <i class="fas fa-hand-holding-usd fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
-            <p id="task-info" style="color:var(--gray);">Activez un VIP pour commencer.</p>
+        <h2 style="text-align:center;">Tâches Quotidiennes</h2>
+        <div class="card" style="text-align:center; padding:40px 20px;">
+            <i class="fas fa-coins fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
+            <p id="task-info" style="color:var(--gray); margin-bottom:20px;">Activez un VIP pour commencer.</p>
             <button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCUPÉRER COMMISSION</button>
             <p id="task-msg" style="margin-top:20px; font-weight:bold;"></p>
         </div>
     </div>
 
     <div id="paj-depot" class="paj">
-        <h2>Recharge USDT (BEP20)</h2>
-        <div class="card" style="text-align:center;">
-            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:8px solid #fff; border-radius:15px; margin-bottom:20px;">
-            <div style="background:#000; padding:15px; border-radius:12px; font-family:monospace; font-size:12px; border:1px dashed #444; word-break:break-all; margin-bottom:20px; color: var(--primary);">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</div>
-            <button class="btn-main" onclick="copyAdr()" style="font-size:12px; width:auto; padding:10px 20px;">Copier l'adresse</button>
-            <hr style="border:0; border-top:1px solid #333; margin:25px 0;">
-            <input type="number" id="montant-depot" placeholder="Montant transféré (USDT)">
-            <button class="btn-main" style="background:#fff;" onclick="voyePeman()">CONFIRMER LE DÉPÔT</button>
-        </div>
-    </div>
-
-    <div id="paj-retrait" class="paj">
-        <h2>Retirer des fonds</h2>
-        <div class="card">
-            <input type="number" id="ret-montant" placeholder="Montant à retirer">
-            <input type="text" id="ret-adr" placeholder="Adresse USDT BEP20">
-            <button class="btn-main" style="background:var(--red); color:#fff;" onclick="voyeRetrait()">LANCER LE RETRAIT</button>
-        </div>
-    </div>
-
-    <div id="paj-ekip" class="paj">
-        <h2>Invitation</h2>
-        <div class="card" style="text-align:center;">
-            <p style="color:var(--gray);">Partagez votre lien pour gagner plus :</p>
-            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin:20px 0; border:1px solid #333; word-break:break-all;">...</div>
-            <button class="btn-main" onclick="copyLink()">Copier mon lien</button>
-        </div>
-    </div>
-
-    <div id="paj-admin" class="paj">
-        <h2 style="color:orange;">Gestion des Dépôts</h2>
-        <div id="admin-list"></div>
-        <button class="btn-main" onclick="montrePaj('paj-home')" style="margin-top:20px; background:#444; color:#fff;">RETOUR</button>
-    </div>
-
-    <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-wallet"></i><br>Portefeuille</div>
-        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-gem"></i><br>Packs</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-tasks"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-link"></i><br>Lien</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Sortie</div>
-    </nav>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // CONFIGURATION FIREBASE
-        const firebaseConfig = {
-            apiKey: "API_KEY_PA_W",
-            authDomain: "starplus-47411.firebaseapp.com",
-            databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
-            projectId: "starplus-47411",
-            storageBucket:
+        <h2>Recharge USDT (BEP20
