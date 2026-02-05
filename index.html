@@ -29,18 +29,13 @@
         .nav-item i { font-size: 20px; margin-bottom: 5px; }
         .nav-item.active { color: var(--primary); }
 
-        /* Social Share Buttons */
-        .social-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .social-btn { padding: 12px; border-radius: 10px; border: none; color: white; cursor: pointer; font-size: 18px; transition: 0.3s; }
-        .fb { background: #1877f2; } .wa { background: #25d366; } .tg { background: #0088cc; }
+        /* Wallet Display Style */
+        .wallet-box { background: #000; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); margin: 15px 0; position: relative; }
+        .wallet-address { font-size: 11px; color: var(--primary); word-break: break-all; margin-bottom: 10px; display: block; }
+        .copy-badge { background: var(--primary); color: #000; padding: 5px 10px; border-radius: 5px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Support Button */
         .support-btn { position: fixed; right: 20px; bottom: 100px; background: var(--primary); color: black; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(192, 255, 0, 0.4); z-index: 999; cursor: pointer; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        .team-box { display: flex; justify-content: space-between; margin-top: 10px; background: #000; padding: 10px; border-radius: 10px; border: 1px solid #333; }
-        .team-box span { font-size: 12px; color: var(--gray); }
-        .team-box b { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -53,13 +48,9 @@
         <div style="text-align:center; margin-top:40px; padding: 10px;">
             <h1 style="color:var(--primary); font-size:48px; margin-bottom:5px; letter-spacing: -2px;">STARPLUS</h1>
             <p style="color:var(--gray); margin-bottom:30px; font-size: 14px;">Investissez dans le futur.</p>
-            
             <div class="card" style="width:100%; max-width:380px; margin:auto;">
-                <h3 id="auth-title" style="margin-bottom: 20px; font-size: 22px;">Créer un compte</h3>
-                
-                <div id="field-username" class="input-group">
-                    <input type="text" id="username" placeholder="Nom d'utilisateur">
-                </div>
+                <h3 id="auth-title">Créer un compte</h3>
+                <div id="field-username" class="input-group"><input type="text" id="username" placeholder="Nom d'utilisateur"></div>
                 <div class="input-group"><input type="email" id="email" placeholder="Adresse Email"></div>
                 <div class="input-group">
                     <input type="password" id="pass" placeholder="Mot de passe">
@@ -69,13 +60,11 @@
                     <input type="password" id="pass-confirm" placeholder="Confirmer mot de passe">
                     <i class="fas fa-eye" onclick="togglePass('pass-confirm', this)"></i>
                 </div>
-                <div id="field-ref" class="input-group">
-                    <input type="text" id="ref-code" placeholder="ID de parrainage (Optionnel)">
-                </div>
+                <div id="field-ref" class="input-group"><input type="text" id="ref-code" placeholder="Email parrain (Optionnel)"></div>
                 <button class="btn-main" id="btn-auth" onclick="handleAuth()">S'INSCRIRE</button>
                 <p style="margin-top:25px; font-size:14px; color: var(--gray);">
                     <span id="text-ask">Déjà un membre ?</span> 
-                    <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-left:5px;">Se connecter</span>
+                    <span id="toggle-link" onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:bold;">Se connecter</span>
                 </p>
             </div>
         </div>
@@ -83,256 +72,34 @@
 
     <div id="paj-home" class="paj">
         <div class="balance-card">
-            <small style="color:var(--gray); text-transform:uppercase; font-weight:bold;">Solde USDT</small>
-            <h1 style="font-size: 45px; margin: 10px 0;"><span id="user-balance">0.00</span></h1>
+            <small>Solde USDT</small>
+            <h1 style="font-size: 45px;"><span id="user-balance">0.00</span></h1>
             <div style="display:flex; gap:12px; margin-top:20px;">
                 <button class="btn-main" onclick="montrePaj('paj-depot')" style="background:#fff; flex:1;">Dépôt</button>
                 <button class="btn-main" onclick="montrePaj('paj-retrait')" style="flex:1;">Retrait</button>
             </div>
         </div>
-
-        <div id="admin-shortcut" style="display:none; margin-top: 15px;">
-            <button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button>
-        </div>
-
+        <div id="admin-shortcut" style="display:none; margin-top:15px;"><button class="btn-main" style="background:orange; color:black;" onclick="montrePaj('paj-admin'); chajeAdmin();">PANEL ADMIN</button></div>
         <h3 style="margin-top:25px;">Statistiques</h3>
-        <div class="card" style="display:flex; justify-content:space-around; text-align:center; padding: 15px;">
-            <div><small style="color:var(--gray);">Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
-            <div><small style="color:var(--gray);">ID</small><br><b id="display-id" style="font-size: 11px;">...</b></div>
-            <div><small style="color:var(--gray);">Revenu/J</small><br><b id="daily-profit">0.00</b></div>
+        <div class="card" style="display:flex; justify-content:space-around; text-align:center;">
+            <div><small>Pack</small><br><b id="user-vip-status" style="color:var(--primary);">VIP 0</b></div>
+            <div><small>Email</small><br><b id="display-id" style="font-size: 10px;">...</b></div>
+            <div><small>Revenu/J</small><br><b id="daily-profit">0.00</b></div>
         </div>
     </div>
 
-    <div id="paj-ekip" class="paj">
-        <h2>Mon Équipe</h2>
+    <div id="paj-depot" class="paj">
+        <h2>Recharger mon compte</h2>
         <div class="card" style="text-align:center;">
-            <p style="color:var(--gray); font-size: 13px;">Gagnez sur 3 niveaux de parrainage</p>
-            <div id="ref-link" style="background:#000; padding:15px; border-radius:10px; font-size:11px; color:var(--primary); margin-bottom:15px; border:1px solid #333; word-break: break-all;">Lien de parrainage...</div>
-            <button class="btn-main" onclick="copyLink()">COPIER MON LIEN</button>
+            <p style="font-size: 13px; color: var(--gray);">Réseau: <b>USDT BEP20</b></p>
+            <img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;">
             
-            <div class="social-grid">
-                <button class="social-btn fb" onclick="shareFB()"><i class="fab fa-facebook"></i></button>
-                <button class="social-btn wa" onclick="shareWA()"><i class="fab fa-whatsapp"></i></button>
-                <button class="social-btn tg" onclick="shareTG()"><i class="fab fa-telegram"></i></button>
+            <div class="wallet-box">
+                <span class="wallet-address" id="company-wallet">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</span>
+                <span class="copy-badge" onclick="copyToClipboard('0x93ba288d4fe6c64234a44f3234cbf6949e76246e')"><i class="fas fa-copy"></i> Copier l'adresse</span>
             </div>
-        </div>
 
-        <h3>Rapport d'équipe</h3>
-        <div class="card">
-            <div class="team-box"><span>Level 1 (10%)</span><b id="lvl1-count">0</b></div>
-            <div class="team-box"><span>Level 2 (5%)</span><b id="lvl2-count">0</b></div>
-            <div class="team-box"><span>Level 3 (2%)</span><b id="lvl3-count">0</b></div>
-            <div class="team-box" style="margin-top:15px; border-color:var(--primary);"><span>Total Commissions</span><b id="total-comm">0.00 USDT</b></div>
-        </div>
-    </div>
-
-    <div id="paj-vip" class="paj"><h2 style="text-align:center;">Packs VIP</h2><div id="vip-list"></div></div>
-    <div id="paj-task" class="paj"><h2 style="text-align:center;">Tâches</h2><div class="card" style="text-align:center; padding:40px 20px;"><i class="fas fa-bolt fa-4x" style="color:var(--primary); margin-bottom:20px;"></i><p id="task-info">Veuillez activer un pack.</p><button class="btn-main" id="btn-task" onclick="faireTask()" disabled>RÉCOLTER</button><p id="task-msg" style="margin-top:20px; color:var(--green);"></p></div></div>
-    <div id="paj-depot" class="paj"><h2>Dépôt USDT</h2><div class="card" style="text-align:center;"><img src="https://chart.googleapis.com/chart?chs=180&cht=qr&chl=0x93ba288d4fe6c64234a44f3234cbf6949e76246e" style="border:5px solid #fff; border-radius:10px; margin:15px 0;"><div style="font-size:10px; background:#000; padding:10px; border-radius:8px; border:1px solid #333;">0x93ba288d4fe6c64234a44f3234cbf6949e76246e</div><input type="number" id="montant-depot" placeholder="Montant"><button class="btn-main" onclick="voyePeman()">CONFIRMER</button></div></div>
-    <div id="paj-retrait" class="paj"><h2>Retrait</h2><div class="card"><input type="number" id="ret-montant" placeholder="Montant"><input type="text" id="ret-adr" placeholder="Adresse BEP20"><button class="btn-main" style="background:var(--red); color:white;" onclick="voyeRetrait()">RETIRER</button></div></div>
-    <div id="paj-admin" class="paj"><h2>Admin Panel</h2><div id="admin-list"></div><button class="btn-main" onclick="montrePaj('paj-home')" style="background:#333;">RETOUR</button></div>
-
-    <nav id="main-nav" class="nav-bar" style="display:none;">
-        <div class="nav-item active" onclick="montrePaj('paj-home', this)"><i class="fas fa-home"></i><br>Accueil</div>
-        <div class="nav-item" onclick="montrePaj('paj-vip', this)"><i class="fas fa-crown"></i><br>VIP</div>
-        <div class="nav-item" onclick="montrePaj('paj-task', this)"><i class="fas fa-bolt"></i><br>Tâches</div>
-        <div class="nav-item" onclick="montrePaj('paj-ekip', this)"><i class="fas fa-users"></i><br>Équipe</div>
-        <div class="nav-item" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i><br>Quitter</div>
-    </nav>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, onValue, remove, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "API_KEY",
-            authDomain: "starplus-47411.firebaseapp.com",
-            databaseURL: "https://starplus-47411-default-rtdb.firebaseio.com",
-            projectId: "starplus-47411",
-            storageBucket: "starplus-47411.appspot.com",
-            messagingSenderId: "SENDER_ID",
-            appId: "APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        let currentUser = null;
-        let isLogin = false;
-
-        const vips = [
-            {n:0, p:0, r:0}, {n:1, p:20, r:1.4}, {n:2, p:60, r:4.8}, {n:3, p:150, r:13.5},
-            {n:4, p:400, r:40}, {n:5, p:1000, r:120}, {n:6, p:2500, r:375}, {n:7, p:6000, r:1200}
-        ];
-
-        // --- AUTH & MLM LOGIC ---
-        window.handleAuth = async () => {
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const pass = document.getElementById('pass').value.trim();
-            const user = document.getElementById('username').value.trim();
-            const refID = document.getElementById('ref-code').value.trim(); // Email parrain an
+            <div class="input-group">
+                <input type="number" id="montant-depot" placeholder="Montant déposé (USDT)">
+            </div>
             
-            if(!email || !pass) return alert("Veuillez remplir les champs.");
-            const id = email.replace(/\./g, '_');
-            const uRef = ref(db, 'users/' + id);
-
-            if(!isLogin) { // Inscription
-                const check = await get(uRef);
-                if(check.exists()) return alert("Email déjà utilisé.");
-                
-                // Kreye kont
-                await set(uRef, { 
-                    username: user, email, pass, balance: 0, vip: 0, lastTask: "", 
-                    referredBy: refID ? refID.replace(/\./g, '_') : null,
-                    commissions: 0, lvl1: 0, lvl2: 0, lvl3: 0
-                });
-
-                // Mizajou ekip parrain an si genyen
-                if(refID) await updateTeam(refID.replace(/\./g, '_'), 1);
-                alert("Compte créé avec succès !");
-            } else { // Connexion
-                const snap = await get(uRef);
-                if(!snap.exists() || snap.val().pass !== pass) return alert("Identifiants incorrects.");
-            }
-            currentUser = id;
-            initApp(email);
-        };
-
-        async function updateTeam(parentID, depth) {
-            if(!parentID || depth > 3) return;
-            const pRef = ref(db, 'users/' + parentID);
-            const snap = await get(pRef);
-            if(snap.exists()) {
-                let data = snap.val();
-                if(depth === 1) await update(pRef, { lvl1: (data.lvl1 || 0) + 1 });
-                if(depth === 2) await update(pRef, { lvl2: (data.lvl2 || 0) + 1 });
-                if(depth === 3) await update(pRef, { lvl3: (data.lvl3 || 0) + 1 });
-                if(data.referredBy) await updateTeam(data.referredBy, depth + 1);
-            }
-        }
-
-        function initApp(email) {
-            document.getElementById('paj-auth').style.display = 'none';
-            document.getElementById('main-nav').style.display = 'flex';
-            const link = window.location.origin + window.location.pathname + "?ref=" + email;
-            document.getElementById('ref-link').innerText = link;
-            document.getElementById('display-id').innerText = email;
-
-            onValue(ref(db, 'users/' + currentUser), (snap) => {
-                const d = snap.val();
-                document.getElementById('user-balance').innerText = d.balance.toFixed(2);
-                document.getElementById('user-vip-status').innerText = "VIP " + d.vip;
-                document.getElementById('lvl1-count').innerText = d.lvl1 || 0;
-                document.getElementById('lvl2-count').innerText = d.lvl2 || 0;
-                document.getElementById('lvl3-count').innerText = d.lvl3 || 0;
-                document.getElementById('total-comm').innerText = (d.commissions || 0).toFixed(2) + " USDT";
-                
-                const prof = vips.find(v => v.n == d.vip).r;
-                document.getElementById('daily-profit').innerText = prof.toFixed(2);
-                document.getElementById('btn-task').disabled = (d.vip === 0);
-            });
-            montrePaj('paj-home');
-        }
-
-        // --- DEPOSITS & MLM COMMISSIONS ---
-        window.valideDepot = async (key, uid, m) => {
-            const uRef = ref(db, 'users/' + uid);
-            const snap = await get(uRef);
-            const data = snap.val();
-            
-            const nouvoBal = data.balance + m;
-            let nvVip = 0;
-            vips.forEach(v => { if(nouvoBal >= v.p) nvVip = v.n; });
-            
-            await update(uRef, { balance: nouvoBal, vip: nvVip });
-            await distributeComm(data.referredBy, m, 1); // Distribye kòb bay parrain yo
-            await remove(ref(db, 'depots_pendants/' + key));
-        };
-
-        async function distributeComm(parentID, amount, depth) {
-            if(!parentID || depth > 3) return;
-            const rates = { 1: 0.10, 2: 0.05, 3: 0.02 }; // 10%, 5%, 2%
-            const pRef = ref(db, 'users/' + parentID);
-            const snap = await get(pRef);
-            if(snap.exists()) {
-                const comm = amount * rates[depth];
-                await update(pRef, { 
-                    balance: snap.val().balance + comm,
-                    commissions: (snap.val().commissions || 0) + comm
-                });
-                if(snap.val().referredBy) await distributeComm(snap.val().referredBy, amount, depth + 1);
-            }
-        }
-
-        // --- UI & SOCIAL ---
-        window.toggleAuthMode = () => {
-            isLogin = !isLogin;
-            document.getElementById('auth-title').innerText = isLogin ? "Connexion" : "Créer un compte";
-            document.getElementById('btn-auth').innerText = isLogin ? "SE CONNECTER" : "S'INSCRIRE";
-            document.getElementById('field-username').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-confirm').style.display = isLogin ? "none" : "block";
-            document.getElementById('field-ref').style.display = isLogin ? "none" : "block";
-        };
-
-        window.togglePass = (id, icon) => {
-            const el = document.getElementById(id);
-            el.type = el.type === "password" ? "text" : "password";
-            icon.classList.toggle('fa-eye-slash');
-        };
-
-        window.montrePaj = (id, el) => {
-            document.querySelectorAll('.paj').forEach(p => p.classList.remove('aktive'));
-            document.getElementById(id).classList.add('aktive');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-        };
-
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('ref-link').innerText); alert("Lien copié !"); };
-        
-        // Social functions
-        window.shareWA = () => { window.open(`https://wa.me/?text=Rejoignez STARPLUS et gagnez des USDT chaque jour ! Mon lien: ${document.getElementById('ref-link').innerText}`); };
-        window.shareFB = () => { window.open(`https://www.facebook.com/sharer/sharer.php?u=${document.getElementById('ref-link').innerText}`); };
-        window.shareTG = () => { window.open(`https://telegram.me/share/url?url=${document.getElementById('ref-link').innerText}&text=Investissez avec STARPLUS`); };
-
-        // Handle URL referral
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if(urlParams.has('ref')) document.getElementById('ref-code').value = urlParams.get('ref');
-        };
-
-        // ... Lòt fonksyon yo (voyePeman, faireTask, chajeAdmin) rete menm jan ...
-        window.voyePeman = async () => {
-            const m = document.getElementById('montant-depot').value;
-            if(m < 20) return alert("Min 20 USDT");
-            await push(ref(db, 'depots_pendants'), { userId: currentUser, montant: parseFloat(m) });
-            alert("Requête de dépôt envoyée !");
-        };
-
-        window.faireTask = async () => {
-            const uRef = ref(db, 'users/' + currentUser);
-            const snap = await get(uRef);
-            const today = new Date().toDateString();
-            if(snap.val().lastTask === today) return alert("Déjà récolté aujourd'hui.");
-            const profit = vips.find(v => v.n == snap.val().vip).r;
-            await update(uRef, { balance: snap.val().balance + profit, lastTask: today });
-            document.getElementById('task-msg').innerText = "Succès: +" + profit + " USDT !";
-        };
-
-        window.chajeAdmin = () => {
-            onValue(ref(db, 'depots_pendants'), (snap) => {
-                const cont = document.getElementById('admin-list');
-                cont.innerHTML = "";
-                snap.forEach(child => {
-                    cont.innerHTML += `<div class="card">${child.val().userId} : ${child.val().montant} USDT <br><button class="btn-main" onclick="valideDepot('${child.key}','${child.val().userId}',${child.val().montant})">Approuver</button></div>`;
-                });
-            });
-        };
-
-        const vCont = document.getElementById('vip-list');
-        vips.slice(1).forEach(v => {
-            vCont.innerHTML += `<div class="card" style="display:flex; justify-content:space-between;">
-                <div><b>VIP ${v.n}</b><br><small>${v.p} USDT</small></div>
-                <div style="text-align:right;">${v.r} USDT/J<br><button onclick="montrePaj('paj-depot')" style="background:var(--primary); border:none; padding:5px; border-radius:5px; margin-top:5px; font-weight:bold;">Acheter</button></div>
-            </div>`;
-        });
-    </script>
-</body>
-</html>
